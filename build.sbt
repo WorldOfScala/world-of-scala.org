@@ -9,15 +9,16 @@ import Dependencies._
 //
 import DeploymentSettings._
 
-val scala3 = "3.7.2"
+val scala3 = "3.7.3"
 
 name := "World Of Scala"
 
 inThisBuild(
   List(
-    scalaVersion      := scala3,
-    semanticdbEnabled := true,
-    semanticdbVersion := scalafixSemanticdb.revision,
+    scalaVersion                            := scala3,
+    dependencyOverrides += "org.scala-lang" %% "scala3-library" % scala3, // ScalaJS workaround
+    semanticdbEnabled                       := true,
+    semanticdbVersion                       := scalafixSemanticdb.revision,
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
