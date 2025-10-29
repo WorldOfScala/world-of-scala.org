@@ -15,6 +15,6 @@ jobs:
         steps:
         - uses: WorldOfScala/actions/compile@master
           with:
-           script: ./scripts/setup.sh
+           script: ./scripts/ci-build.sh
 
 
