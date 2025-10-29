@@ -211,17 +211,17 @@ object CreateMesh:
       },
       overflowY := "scroll",
       height    := "400px",
-      compat.Table(
-        // _.busy <-- busyState,
-        _.growing := TableGrowingMode.Scroll,
-//        _.events.onLoadMore.mapTo(()) --> loadMoreBus,
-        _.slots.columns := compat.Table.column(width := "20rem", span(lineHeight := "1.4rem", "ID")),
-        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Name")),
-        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Preview")),
-        _.slots.columns := compat.Table.column(span(lineHeight := "1.4rem", "Count")),
+      Table(
+        _.overflowMode    := TableOverflowMode.Scroll,
+        _.slots.headerRow := Table.headerRow(
+          _.cell(width := "20rem", span(lineHeight := "1.4rem", "ID")),
+          _.cell(span(lineHeight := "1.4rem", "Name")),
+          _.cell(span(lineHeight := "1.4rem", "Preview")),
+          _.cell(span(lineHeight := "1.4rem", "Count"))
+        ),
         children <-- meshes.events.map(
           _.map { case MeshEntry(id, name, thumbnail, count) =>
-            compat.Table.row(
+            Table.row(
               dataAttr("card-name") := id.toString,
               _.cell(id.toString()),
               _.cell(name),
