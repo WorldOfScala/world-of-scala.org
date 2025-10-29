@@ -14,7 +14,7 @@ jobs:
 
         steps:
         - uses: WorldOfScala/actions/compile@master
+          with:
+           script: ./scripts/setup.sh
 
-        - name: Run SBT compile
-          run: ./scripts/setup.sh
 
