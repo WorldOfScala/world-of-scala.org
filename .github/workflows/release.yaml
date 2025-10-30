@@ -20,7 +20,7 @@ jobs:
       - name: Set up sbt
         uses: sbt/setup-sbt@v1
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
             node-version: 21
       - name: Login to Docker Hub
