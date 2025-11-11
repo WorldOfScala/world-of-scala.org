@@ -6,6 +6,7 @@ import THREE.*
 
 import com.raquo.laminar.api.L.*
 
+import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
 
 import dev.cheleb.zthreesjs.*

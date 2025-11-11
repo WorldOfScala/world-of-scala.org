@@ -3,7 +3,7 @@ package org.worldofscala.app
 import dev.cheleb.scalamigen.*
 import dev.cheleb.scalamigen.ui5.UI5WidgetFactory
 
-import dev.cheleb.ziotapir.laminar.*
+import dev.cheleb.ziotapir.*
 
 import org.worldofscala.user.*
 import org.worldofscala.auth.*

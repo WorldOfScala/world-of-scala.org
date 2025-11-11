@@ -1,11 +1,14 @@
 package org.worldofscala.app
 
+import zio.json.*
+
 import be.doeraene.webcomponents.ui5.*
 import be.doeraene.webcomponents.ui5.configkeys.*
 import com.raquo.laminar.api.L.*
 
 import dev.cheleb.scalamigen.*
 
+import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
 
 import scala.concurrent.duration.DurationInt
@@ -98,6 +101,6 @@ object Header:
   def loginHandler(session: Session[UserToken]): Observer[Any] = Observer[Any] { _ =>
     UserEndpoint
       .login(credentials.now())
-      .map(token => session.saveToken(token))
+      .map(token => session.saveToken(token.toJson))
       .emit(loginSuccessEventBus, loginErrorEventBus)
   }
