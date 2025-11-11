@@ -1,5 +1,5 @@
 {
-  "name": "world-of-scala",
+  "name": "World of scala",
   "private": true,
   "version": "0.0.1",
   "main": "index.js",
@@ -20,6 +20,6 @@
   },
   "devDependencies": {
     "@scala-js/vite-plugin-scalajs": "^1.1.0",
-    "vite": "^7.1.12"
+    "vite": "^7.2.2"
   }
 }

@@ -7,6 +7,13 @@ set -e
 #
 . ./scripts/env.sh
 
+envTime=$(get_mtime "$BUILD_ENV_FILE")
+buildTime=$(get_mtime "build.sbt")
+if [ $envTime -lt $buildTime ]; then
+    echo "$BUILD_ENV_FILE is outdated. Regenerating..."
+    rm -f $BUILD_ENV_FILE
+fi
+
 if [ ! -e $BUILD_ENV_FILE ]; then
     echo "Generating $BUILD_ENV_FILE"
     echo This file will store the Scala version.
@@ -34,9 +41,11 @@ function npmInstall() {
         echo "First time setup: Installing npm dependencies..."
         npm i
     else
+        echo "Checking npm dependencies..."
         filename=package.json
         age=$(get_mtime "$filename")
         age_lock=$(get_mtime "$filename_lock")
+        echo "package.json last modified: $age | package-lock.json last modified: $age_lock"
         if [ $age_lock -lt $age ]; then
             echo "Updating npm dependencies..."
             npm i
