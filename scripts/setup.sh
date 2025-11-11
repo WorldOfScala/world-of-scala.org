@@ -7,11 +7,13 @@ set -e
 #
 . ./scripts/env.sh
 
-envTime=$(get_mtime "$BUILD_ENV_FILE")
-buildTime=$(get_mtime "build.sbt")
-if [ $envTime -lt $buildTime ]; then
+if [ -e $BUILD_ENV_FILE ]; then
+ envTime=$(get_mtime "$BUILD_ENV_FILE")
+ buildTime=$(get_mtime "build.sbt")
+ if [ $envTime -lt $buildTime ]; then
     echo "$BUILD_ENV_FILE is outdated. Regenerating..."
     rm -f $BUILD_ENV_FILE
+ fi
 fi
 
 if [ ! -e $BUILD_ENV_FILE ]; then
