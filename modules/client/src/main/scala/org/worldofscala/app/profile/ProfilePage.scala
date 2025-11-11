@@ -2,6 +2,7 @@ package org.worldofscala.app.profile
 
 import com.raquo.laminar.api.L.*
 
+import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.user.*
