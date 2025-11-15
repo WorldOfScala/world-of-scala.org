@@ -10,8 +10,6 @@ import org.scalajs.dom
 
 import java.io.*
 
-import org.worldofscala.app.session
-
 import scala.scalajs.js.typedarray.*
 
 import be.doeraene.webcomponents.ui5.*
@@ -21,8 +19,10 @@ import org.worldofscala.earth.Mesh as OrgaMesh
 
 import THREE.*
 import org.worldofscala.earth.MeshEntry
+import org.worldofscala.auth.UserToken
+import org.worldofscala.app.given
 
-object CreateMesh:
+object CreateMesh extends SecuredContent[UserToken]:
 
   val name                                       = Var("")
   val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
@@ -30,17 +30,16 @@ object CreateMesh:
 
   val meshes = EventBus[List[MeshEntry]]()
 
-  def reset() =
+  private def reset() =
     name.set("")
     fileVar.set(None)
     thumbnail.set("")
 
-  def apply() =
+  override def init: Unit = reset()
+
+  def securedContent(token: UserToken) =
     div(
       styleAttr := "max-width: fit-content; margin:1em auto",
-      onMountCallback { _ =>
-        reset()
-      },
       div(
         styleAttr := "float: left; margin:1em",
         h1("Meshes"),
