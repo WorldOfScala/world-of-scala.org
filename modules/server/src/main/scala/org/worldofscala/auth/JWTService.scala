@@ -40,7 +40,7 @@ class JWTServiceLive private (jwtConfig: JWTConfig, clock: JavaClock) extends JW
     for {
       now      <- ZIO.attempt(clock.instant())
       expiresAt = now.plus(TTL)
-      token <- ZIO.attempt(
+      token    <- ZIO.attempt(
                  JWT
                    .create()
                    .withIssuer(ISSUER)
@@ -50,12 +50,12 @@ class JWTServiceLive private (jwtConfig: JWTConfig, clock: JavaClock) extends JW
                    .withClaim(CLAIN_USER_NAME, user.email)
                    .sign(algorithm)
                )
-    } yield UserToken(user.id, user.email, token, expiresAt.getEpochSecond)
+    } yield UserToken(user.id, user.email, token, Some(expiresAt.getEpochSecond))
 
   override def verifyToken(token: String): Task[UserID] =
     for {
       decoded <- ZIO.attempt(verifier.verify(token))
-      userID <- ZIO.attempt(
+      userID  <- ZIO.attempt(
                   UserID(User.Id(UUID.fromString(decoded.getSubject())), decoded.getClaim(CLAIN_USER_NAME).asString())
                 )
     } yield userID

@@ -15,7 +15,9 @@ import org.worldofscala.earth.Mesh
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
 
-object CreateOrganisation:
+import org.worldofscala.auth.UserToken
+
+object CreateOrganisation extends SecuredContent[UserToken]:
 
   given Form[LatLon] = stringFormWithValidation(using
     new Validator[LatLon] {
@@ -39,16 +41,16 @@ object CreateOrganisation:
   given Defaultable[LatLon] with
     def default = LatLon(46.5188, 6.5593)
 
-  def apply() =
+  val meshes = EventBus[List[MeshEntry]]()
+
+  override def init: Unit =
+    MeshEndpoint.all(()).emit(meshes)
+  def securedContent(token: UserToken) =
     val organisationVar = Var(
       NewOrganisation("", LatLon.empty, Mesh.default)
     )
-    val meshes = EventBus[List[MeshEntry]]()
 
     div(
-      onMountCallback { _ =>
-        MeshEndpoint.all(()).emit(meshes)
-      },
       h1("Create  Organisation"),
       div(
         styleAttr := "float: left;",
