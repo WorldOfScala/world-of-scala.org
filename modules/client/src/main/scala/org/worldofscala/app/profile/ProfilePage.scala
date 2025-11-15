@@ -7,16 +7,16 @@ import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.user.*
 import org.worldofscala.auth.UserToken
-import org.worldofscala.app.SecuredPageWithInit
+import org.worldofscala.app.given
 
 /**
  * ProfilePage is a secured page that displays the user's profile information.
  */
-object ProfilePage extends SecuredPageWithInit:
+object ProfilePage extends SecuredContent[UserToken]:
 
   val userBus = new EventBus[User]
 
-  def init =
+  override def init =
     UserEndpoint.profile(()).emit(userBus)
   def securedContent(userToken: UserToken) =
     div(
