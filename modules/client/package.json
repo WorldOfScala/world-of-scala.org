@@ -14,7 +14,7 @@
   "dependencies": {
     "@ui5/webcomponents": "2.15.1",
     "@ui5/webcomponents-fiori": "2.15.1",
-    "@ui5/webcomponents-icons": "2.15.1",
+    "@ui5/webcomponents-icons": "2.16.2",
     "@ui5/webcomponents-compat": "2.15.1",
     "three": "0.180.0"
   },
