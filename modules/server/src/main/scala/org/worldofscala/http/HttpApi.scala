@@ -35,15 +35,19 @@ object HttpApi extends Routes {
   private def streamEndpointsZIO(ctrs: URIO[Deps, List[BaseController]]) =
     ctrs.map(gatherRoutes(_.streamRoutes))
 
-  private def gatherRoutes: URIO[Deps, List[ServerEndpoint[ZioStreams, Task]]] =
+  private def gatherAllRoutes: URIO[Deps, List[ServerEndpoint[ZioStreams, Task]]] =
     for {
       mem             <- makeControllers.memoize
       endpoints       <- endpointsZIO(mem)
       streamEndpoints <- streamEndpointsZIO(mem)
     } yield endpoints ++ streamEndpoints
 
+  /**
+   * This is critical, to not provide the Postgres layer too early, it would be
+   * closed too early in the app lifecycle.
+   */
   def endpoints =
-    gatherRoutes.provideSome[Postgres[SnakeCase]](
+    gatherAllRoutes.provideSome[Postgres[SnakeCase]](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,
