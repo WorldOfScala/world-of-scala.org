@@ -20,6 +20,8 @@ inThisBuild(
     dependencyOverrides += "org.scala-lang" %% "scala3-library" % scala3, // ScalaJS workaround
     semanticdbEnabled                       := true,
     semanticdbVersion                       := scalafixSemanticdb.revision,
+    fullstackJsProject                      := client,
+    fullstackJvmProject                     := Some(server),
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
@@ -57,7 +59,7 @@ lazy val root = project
 //
 lazy val server = project
   .in(file("modules/server"))
-  .enablePlugins(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
+  .enablePlugins(FullstackPlugin, SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
     staticGenerationSettings(client)
   )
@@ -152,38 +154,3 @@ def scalajsProject(projectId: String): Project =
 //        "-Xfatal-warnings"
       )
     )
-
-//
-// This is a global setting that will generate a build-env.sh file in the target directory.
-// This file will contain the SCALA_VERSION variable that can be used in the build process
-//
-Global / onLoad := {
-
-  val buildEnvShPath = sys.env.get("BUILD_ENV_SH_PATH")
-  buildEnvShPath.foreach { path =>
-    val outputFile = Path(path).asFile
-    println(s"🍺 Generating build-env.sh at $outputFile")
-
-    val SCALA_VERSION = (client / scalaVersion).value
-
-    val MAIN_JS_PATH =
-      client.base.getAbsoluteFile / "target" / s"scala-$SCALA_VERSION" / "client-fastopt/main.js"
-
-    val NPM_DEV_PATH =
-      root.base.getAbsoluteFile / "target" / "npm-dev-server-running.marker"
-
-    IO.writeLines(
-      outputFile,
-      s"""
-         |# Generated file see build.sbt
-         |SCALA_VERSION="$SCALA_VERSION"
-         |# Marker file to indicate that npm dev server has been started
-         |MAIN_JS_PATH="${MAIN_JS_PATH}"
-         |# Marker file to indicate that npm dev server has been started
-         |NPM_DEV_PATH="${NPM_DEV_PATH}"
-         |""".stripMargin.split("\n").toList,
-      StandardCharsets.UTF_8
-    )
-  }
-  (Global / onLoad).value
-}
