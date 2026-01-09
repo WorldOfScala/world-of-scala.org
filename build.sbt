@@ -61,9 +61,6 @@ lazy val server = project
   .in(file("modules/server"))
   .enablePlugins(FullstackPlugin, SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
-    staticGenerationSettings(client)
-  )
-  .settings(
     fork := true,
     serverLibraryDependencies,
     testingLibraryDependencies

@@ -9,11 +9,9 @@ import org.scalajs.dom
 import org.worldofscala.*
 
 object Router:
-  val uiBase                     = "public"
-  def uiRoute(segments: String*) = segments.mkString(s"/$uiBase/", "/", "")
-  private val externalUrlBus     = EventBus[String]()
-  val writer                     = externalUrlBus
-  def apply() =
+  private val externalUrlBus = EventBus[String]()
+  val writer                 = externalUrlBus
+  def apply()                =
     mainTag(
       linkHandler,
       routes(
@@ -21,32 +19,30 @@ object Router:
           styleAttr := "max-width: fit-content;  margin-left: auto;  margin-right: auto;",
           // potentially children
 
-          pathPrefix(uiBase) {
-            firstMatch(
-              (pathEnd | path("index.html")) {
-                world.Earth()
-              },
-              path("signup") {
-                signup.SignupPage()
-              },
-              path("profile") {
-                profile.ProfilePage()
-              },
-              pathPrefix("organisation") {
-                firstMatch(
-                  path("new") {
-                    organisation.CreateOrganisation()
-                  },
-                  path("mesh" / "new") {
-                    organisation.CreateMesh()
-                  }
-                )
-              },
-              path("about") {
-                HomePage()
-              }
-            )
-          },
+          firstMatch(
+            (pathEnd | path("index.html")) {
+              world.Earth()
+            },
+            path("signup") {
+              signup.SignupPage()
+            },
+            path("profile") {
+              profile.ProfilePage()
+            },
+            pathPrefix("organisation") {
+              firstMatch(
+                path("new") {
+                  organisation.CreateOrganisation()
+                },
+                path("mesh" / "new") {
+                  organisation.CreateMesh()
+                }
+              )
+            },
+            path("about") {
+              HomePage()
+            }
+          ),
           noneMatched:
             div("404 Not Found")
         )
