@@ -10,7 +10,7 @@ import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
 
 import org.worldofscala.app.given
-import org.worldofscala.app.Router
+
 import org.worldofscala.earth.Mesh
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
@@ -79,7 +79,7 @@ object CreateOrganisation extends SecuredContent[UserToken]:
           }
         )
       ),
-      a(href := Router.uiRoute("organisation/mesh/new"), "New mesh")
+      a(href := "mesh/new", "New mesh")
 //      renderToast(organisationBus, errorBus)
     )
 

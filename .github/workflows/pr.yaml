@@ -9,10 +9,13 @@ on:
             - master
 
 jobs:
-    build:
+    CI:
         runs-on: ubuntu-latest
 
         steps:
+        - uses: VirtusLab/scala-cli-setup@main
+          with:
+            jvm: "zulu:23.0.2"    
         - uses: WorldOfScala/actions/compile@master
           with:
            script: ./scripts/ci-build.sh

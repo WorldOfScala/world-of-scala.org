@@ -53,7 +53,7 @@ object Earth {
 
     val textureLoader = TextureLoader()
 
-    val colorMap = textureLoader.load("/public/img/8081-earthmap10k.jpg")
+    val colorMap = textureLoader.load("/img/8081-earthmap10k.jpg")
 
     val material = MeshBasicMaterial(
       color = 0x555555,
@@ -78,7 +78,7 @@ object Earth {
     val loader = new GLTFLoader()
 
     loader.load(
-      "/public/res/scala.glb",
+      "//res/scala.glb",
       (obj) => {
         addPinner(globeGroup, obj, LatLon(46.5188, 6.5593)) // Lauzane
       }

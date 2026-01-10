@@ -1,3 +1,6 @@
+# Managed by sbt-fullstack-js
+/scripts-managed/
+
 target/
 node_modules/
 package-lock.json
@@ -6,6 +9,7 @@ dist/
 .bloop/
 .bsp/
 .metals/
+.scala-build/
 # Ignore this file
 # Doing so will all to publish the project
 # Locally: sbt publishLocal or sbt Docker/publishLocal

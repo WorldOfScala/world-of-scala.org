@@ -17,6 +17,10 @@ jobs:
         with:
             java-version: '23'
             distribution: 'zulu'
+      - uses: VirtusLab/scala-cli-setup@main
+        with:
+            jvm: "zulu:23.0.2"    
+
       - name: Set up sbt
         uses: sbt/setup-sbt@v1
       - name: Setup Node

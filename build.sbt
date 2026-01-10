@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets
 import org.scalajs.linker.interface.ModuleSplitStyle
 
 import Dependencies._
@@ -19,6 +20,8 @@ inThisBuild(
     dependencyOverrides += "org.scala-lang" %% "scala3-library" % scala3, // ScalaJS workaround
     semanticdbEnabled                       := true,
     semanticdbVersion                       := scalafixSemanticdb.revision,
+    fullstackJsProject                      := client,
+    fullstackJvmProject                     := Some(server),
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
@@ -56,10 +59,7 @@ lazy val root = project
 //
 lazy val server = project
   .in(file("modules/server"))
-  .enablePlugins(SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
-  .settings(
-    staticGenerationSettings(client)
-  )
+  .enablePlugins(FullstackPlugin, SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
     fork := true,
     serverLibraryDependencies,
@@ -151,14 +151,3 @@ def scalajsProject(projectId: String): Project =
 //        "-Xfatal-warnings"
       )
     )
-
-//
-// This is a global setting that will generate a build-env.sh file in the target directory.
-// This file will contain the SCALA_VERSION variable that can be used in the build process
-//
-Global / onLoad := {
-
-  insureBuildEnvFile(baseDirectory.value, (client / scalaVersion).value)
-
-  (Global / onLoad).value
-}

@@ -18,10 +18,10 @@ import io.getquill.SnakeCase
 
 object Server {
 
-  private val webJarRoutes = staticResourcesGetServerEndpoint[Task]("public")(
+  private val staticEndpoints = staticResourcesGetServerEndpoint[Task](emptyInput)(
     this.getClass.getClassLoader,
     "public"
-  )
+  ) :: Nil
 
   private def serverOptions: ZioHttpServerOptions[Any] =
     ZioHttpServerOptions.customiseInterceptors
@@ -41,11 +41,8 @@ object Server {
     serverLayer = zio.http.Server.defaultWith(config => config.binding("0.0.0.0", serverConfig.port))
     _          <- zio.http.Server
            .serve(
-             Routes(
-               Method.GET / Root -> handler(Response.redirect(url"public/index.html"))
-             ) ++
-               ZioHttpInterpreter(serverOptions)
-                 .toHttp(metricsEndpoint :: webJarRoutes :: apiEndpoints ::: docEndpoints)
+             ZioHttpInterpreter(serverOptions)
+               .toHttp(metricsEndpoint :: apiEndpoints ::: docEndpoints ::: staticEndpoints)
            )
            .provideSomeLayer(serverLayer) <* Console.printLine("Server started !")
   } yield ()

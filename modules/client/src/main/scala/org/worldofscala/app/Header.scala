@@ -33,7 +33,7 @@ object Header:
       ShellBar(
         _.slots.startButton := a(
           Icon(_.name := IconName.home, cls := "pad-10"),
-          href := Router.uiRoute()
+          href := "/"
         ),
         _.primaryTitle   := "World Of Scala",
         _.secondaryTitle := "Scala ❤️ around the world",
@@ -72,7 +72,7 @@ object Header:
           onClick --> loginHandler(session)
         )
       ),
-      a("Sign up", href := Router.uiRoute("signup"))
+      a("Sign up", href := "/signup")
         .amend(
           onClick.mapTo(false) --> openPopoverBus
         )
@@ -83,13 +83,12 @@ object Header:
       _.separators := ListSeparator.None,
       _.item(
         _.icon := IconName.settings,
-        a("Settings", href := Router.uiRoute("profile"), title := s" Logged in as ${userToken.email}")
+        a("Settings", href := "/profile", title := s" Logged in as ${userToken.email}")
       )
         .amend(
           onClick.mapTo(false) --> openPopoverBus
         ),
-      _.item(a("Organisation", href := Router.uiRoute("organisation", "new"))),
-      _.item(_.icon := IconName.`bar-chart`, a("Statistics", href := Router.uiRoute("demos/scalablytyped"))),
+      _.item(a("Organisation", href := "organisation/new")),
       _.item(_.icon := IconName.log, "Sign out").amend(
         onClick --> { _ =>
           session.clearUserState()
@@ -102,5 +101,6 @@ object Header:
     UserEndpoint
       .login(credentials.now())
       .map(token => session.saveToken(token.toJson))
+      .tap(_ => Router.zGoTo("/profile"))
       .emit(loginSuccessEventBus, loginErrorEventBus)
   }

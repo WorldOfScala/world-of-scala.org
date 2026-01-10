@@ -1,8 +1,3 @@
-#!/usr/bin/env bash
-set -e
-# Import the project environment variables
-. ./scripts/env.sh
+sbt fullstackInit
 
-./scripts/setup.sh
-
-MOD=Docker sbt -mem 4096 "server/Docker/publish"
+./scripts-managed/dockerPublish.sh
