@@ -101,5 +101,6 @@ object Header:
     UserEndpoint
       .login(credentials.now())
       .map(token => session.saveToken(token.toJson))
+      .tap(_ => Router.zGoTo("/profile"))
       .emit(loginSuccessEventBus, loginErrorEventBus)
   }
