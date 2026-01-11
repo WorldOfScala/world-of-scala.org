@@ -21,6 +21,7 @@ import THREE.*
 import org.worldofscala.earth.MeshEntry
 import org.worldofscala.auth.UserToken
 import org.worldofscala.app.given
+import org.scalajs.dom.HTMLElement
 
 object CreateMesh extends SecuredContent[UserToken]:
 
@@ -37,84 +38,94 @@ object CreateMesh extends SecuredContent[UserToken]:
 
   override def init: Unit = reset()
 
-  def securedContent(token: UserToken) =
+  private def addANewMesh() =
+    val openPopoverBus: EventBus[Option[HTMLElement]] = new EventBus
     div(
-      styleAttr := "max-width: fit-content; margin:1em auto",
-      div(
-        styleAttr := "float: left; margin:1em",
-        h1("Meshes"),
-        allMeshes()
+      Button(
+        "+",
+        _.design := ButtonDesign.Emphasized,
+        _.events.onClick.map(_.target).map(Some(_)) --> openPopoverBus.writer
       ),
-      div(
-        styleAttr := "float: left; margin:1em",
-        h2("Create Mesh"),
+      Popover(
+        _.showAtAndCloseFromEvents(openPopoverBus.events),
+        _.headerText := "New mesh",
         div(
-          styleAttr := "float: left;",
-          "Name: ",
-          input(
-            nameAttr    := "name",
-            placeholder := "Name",
-            onInput.mapToValue --> name,
-            value <-- name.signal
-          )
-        ),
-        div(
-          styleAttr := "float: left;",
+          h2("Create Mesh"),
           div(
-            styleAttr := "float: left;",
-            img(
-              src <-- thumbnail.signal,
-              width  := "100px",
-              height := "100px"
+            "Name: ",
+            input(
+              nameAttr    := "name",
+              placeholder := "Name",
+              onInput.mapToValue --> name,
+              value <-- name.signal
+            )
+          ),
+          div(
+            styleAttr := "float: inline-start; margin:1em",
+            div(
+              img(
+                src <-- thumbnail.signal,
+                width  := "100px",
+                height := "100px"
+              ),
+              div(
+                display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
+                div(
+                  h2("Preview"),
+                  child.maybe <-- fileVar.signal.map(preview)
+                )
+              )
             ),
             div(
-              display <-- fileVar.signal.map(o => if o.isEmpty then "none" else "block"),
-              div(
-                h2("Preview"),
-                child.maybe <-- fileVar.signal.map(preview)
-              )
-            )
-          ),
-          div(
-            input(
-              `type` := "file",
-              accept := ".glb",
-              onChange.mapToFiles --> {
-                case file :: Nil =>
-                  fileVar.set(Some(file))
-                case _ =>
-                  fileVar.set(None)
+              input(
+                `type` := "file",
+                accept := ".glb",
+                onChange.mapToFiles --> {
+                  case file :: Nil =>
+                    fileVar.set(Some(file))
+                  case _ =>
+                    fileVar.set(None)
 
-              }
-            )
-          ),
-          div(
-            Button(
-              "Create",
-              disabled <-- name.signal.map(_.isEmpty),
-              onClick --> { ev =>
-                ev.preventDefault()
-                fileVar.now() match {
-                  case Some(file) =>
-                    file.arrayBuffer().`then` { buffer =>
-                      val in  = new ByteArrayInputStream(new Int8Array(buffer).toArray)
-                      val in2 = new ByteArrayInputStream(thumbnail.signal.now().getBytes())
-                      val ios = for {
-                        id <- MeshEndpoint.streamCreate(name.now(), in)
-                        _  <- MeshEndpoint.putThumbnail(id, in2)
-                        ls <- MeshEndpoint.all(())
-                        _   = meshes.emit(ls)
-                        _   = reset()
-                      } yield id
-                      ios.run
-                    }
-                  case None =>
                 }
-              }
+              )
+            ),
+            div(
+              Button(
+                "Create",
+                disabled <-- name.signal.map(_.isEmpty),
+                onClick --> { ev =>
+                  ev.preventDefault()
+                  fileVar.now() match {
+                    case Some(file) =>
+                      file.arrayBuffer().`then` { buffer =>
+                        val in  = new ByteArrayInputStream(new Int8Array(buffer).toArray)
+                        val in2 = new ByteArrayInputStream(thumbnail.signal.now().getBytes())
+                        val ios = for {
+                          id <- MeshEndpoint.streamCreate(name.now(), in)
+                          _  <- MeshEndpoint.putThumbnail(id, in2)
+                          ls <- MeshEndpoint.all(())
+                          _   = meshes.emit(ls)
+                          _   = reset()
+                          _   = openPopoverBus.emit(None)
+                        } yield id
+                        ios.run
+                      }
+                    case None =>
+                  }
+                }
+              )
             )
           )
         )
       )
+    )
+
+  def securedContent(token: UserToken) =
+    div(
+      div(styleAttr := "float: inline-start; margin:1em", addANewMesh()),
+      h2("Meshes"),
+      allMeshes(),
+      hr()
     )
 
   def preview(fileOption: Option[org.scalajs.dom.File]) = fileOption match {
