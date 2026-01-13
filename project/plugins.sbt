@@ -11,7 +11,7 @@ addSbtPlugin("org.xerial.sbt" % "sbt-sonatype"        % "3.12.2")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release"      % "1.11.2")
 addSbtPlugin("com.eed3si9n"   % "sbt-assembly"        % "2.3.1")
 addSbtPlugin("com.eed3si9n"   % "sbt-buildinfo"       % "0.13.1")
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.5")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.6")
 // Static file generator
 addSbtPlugin("org.playframework.twirl" % "sbt-twirl" % "2.0.9")
 // Cross project support, to spread project resources between js and jvm world
