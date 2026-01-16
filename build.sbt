@@ -20,6 +20,7 @@ inThisBuild(
     dependencyOverrides += "org.scala-lang" %% "scala3-library" % scala3, // ScalaJS workaround
     semanticdbEnabled                       := true,
     semanticdbVersion                       := scalafixSemanticdb.revision,
+    fullstackJsPackageManager               := "bun",
     fullstackJsProject                      := client,
     fullstackJvmProject                     := Some(server),
     scalacOptions ++= Seq(
