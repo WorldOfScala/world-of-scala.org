@@ -130,7 +130,7 @@ object Earth {
       case Some(id) =>
         (id, BackendClientLive.url("api", "mesh", id.toString()))
       case None =>
-        (org.worldofscala.earth.Mesh.default, BackendClientLive.url("public", "res", "pinner.glb"))
+        (org.worldofscala.earth.Mesh.default, BackendClientLive.resourceUrl("res", "pinner.glb"))
     }
 
     val meshIO = cache.get(meshId) match {
