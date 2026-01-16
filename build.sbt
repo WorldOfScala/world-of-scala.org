@@ -26,8 +26,8 @@ inThisBuild(
     scalacOptions ++= Seq(
       "-deprecation",
       "-feature",
-      "-Wunused:all"
-//      "-Xfatal-warnings"
+      "-Wunused:all",
+      "-feature"
     ),
     run / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
