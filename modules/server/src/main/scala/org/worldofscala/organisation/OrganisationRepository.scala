@@ -1,9 +1,10 @@
 package org.worldofscala.organisation
 
-import io.getquill.jdbczio.Quill
+import com.augustnagro.magnum.*
 import org.worldofscala.*
-import io.getquill.*
 import io.scalaland.chimney.dsl.*
+import org.worldofscala.user.User
+import org.worldofscala.earth.Mesh
 
 import zio.*
 import zio.stream.ZStream
@@ -22,31 +23,64 @@ trait OrganisationRepository {
 
 object OrganisationRepository extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply)
 
-class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+case class NewOrganisationEntityRepo(
+  id: Option[Organisation.Id] = None,
+  createdBy: User.Id,
+  name: String,
+  meshId: Option[Mesh.Id] = None,
+  location: LatLon,
+  creationDate: Option[java.time.ZonedDateTime] = None
+) derives DbCodec
+
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+case class OrganisationEntityRepo(
+  @Id id: Organisation.Id,
+  createdBy: User.Id,
+  name: String,
+  meshId: Option[Mesh.Id],
+  location: LatLon,
+  creationDate: java.time.ZonedDateTime
+) derives DbCodec
+
+class OrganisationRepositoryLive private (val transactor: Transactor)
     extends OrganisationRepository
     with PGpointSupport {
-  import quill.*
 
   import OrganisationRepository.given
   import MeshRepository.given
   import UserRepository.given
-  override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
-    stream(query[OrganisationEntity])
 
-  inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
-  inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id, _.creationDate)
-  inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate, _.createdBy)
+  override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
+    ZStream.fromIterableZIO {
+      listAll()
+    }
 
   override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
-    run(query[NewOrganisationEntity].insertValue(lift(orga)).returning(r => r))
-      .map(r => r.intoPartial[OrganisationEntity].transform.asOption)
-      .someOrFail(new RuntimeException(""))
+    transact(transactor) {
+      val repo =
+        NewOrganisationEntityRepo(orga.id, orga.createdBy, orga.name, orga.meshId, orga.location, orga.creationDate)
+      val created = repo.create
+      OrganisationEntity(
+        created.id.get,
+        created.createdBy,
+        created.name,
+        created.meshId,
+        created.location,
+        created.creationDate.get
+      )
+    }
 
-  override def listAll(): Task[List[OrganisationEntity]] = run(query[OrganisationEntity])
+  override def listAll(): Task[List[OrganisationEntity]] =
+    transact(transactor) {
+      sql"SELECT id, created_by, name, mesh_id, location, creation_date FROM organisations"
+        .query[OrganisationEntityRepo]
+        .run()
+        .map(r => OrganisationEntity(r.id, r.createdBy, r.name, r.meshId, r.location, r.creationDate))
+    }
 }
 
 object OrganisationRepositoryLive {
-  def layer: URLayer[Quill.Postgres[SnakeCase], OrganisationRepository] =
+  def layer: URLayer[Transactor, OrganisationRepository] =
     ZLayer.derive[OrganisationRepositoryLive]
 }

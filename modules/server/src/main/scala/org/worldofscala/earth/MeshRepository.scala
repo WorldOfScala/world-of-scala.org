@@ -1,7 +1,6 @@
 package org.worldofscala.earth
 
-import io.getquill.*
-import io.getquill.jdbczio.Quill
+import com.augustnagro.magnum.*
 
 import org.worldofscala.earth.Mesh.*
 
@@ -19,48 +18,66 @@ trait MeshRepository:
 
 object MeshRepository extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
 
-class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends MeshRepository:
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+case class NewMeshEntityRepo(
+  id: Option[Mesh.Id],
+  label: String,
+  blob: Array[Byte]
+) derives DbCodec
 
-  import quill.*
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+case class MeshEntityRepo(
+  @Id id: Mesh.Id,
+  label: String,
+  blob: Array[Byte],
+  thumbnail: Option[String]
+) derives DbCodec
+
+class MeshRepositoryLive private (val transactor: Transactor) extends MeshRepository:
 
   import MeshRepository.given
 
-  inline given SchemaMeta[NewMeshEntity]      = schemaMeta[NewMeshEntity]("meshes")
-  inline given InsertMeta[NewMeshEntity]      = insertMeta[NewMeshEntity](_.id)
-  inline given SchemaMeta[MeshEntity]         = schemaMeta[MeshEntity]("meshes")
-  inline given SchemaMeta[OrganisationEntity] = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[MeshEntity]         = updateMeta[MeshEntity](_.id)
-
   transparent inline given TransformerConfiguration[?] =
     TransformerConfiguration.default.enableOptionDefaultsToNone
+
   override def saveMesh(mesh: NewMeshEntity): Task[MeshEntity] =
-    run(query[NewMeshEntity].insertValue(lift(mesh)).returning(r => r))
-      .map(r => r.intoPartial[MeshEntity].transform.asOption)
-      .someOrFail(new RuntimeException(""))
+    transact(transactor) {
+      val repo    = NewMeshEntityRepo(mesh.id, mesh.label, mesh.blob)
+      val created = repo.create
+      MeshEntity(created.id.get, created.label, created.blob, None)
+    }
 
   override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Unit] =
-    run(query[MeshEntity].filter(_.id == lift(id)).update(m => m.thumbnail -> lift(thumbnail))).unit
+    transact(transactor) {
+      sql"UPDATE meshes SET thumbnail = $thumbnail WHERE id = $id".update.run()
+      ()
+    }
 
   override def get(id: Id): Task[Option[MeshEntity]] =
-    run(query[MeshEntity].filter(_.id == lift(id))).map(_.headOption)
+    transact(transactor) {
+      sql"SELECT id, label, blob, thumbnail FROM meshes WHERE id = $id"
+        .query[MeshEntityRepo]
+        .run()
+        .headOption
+        .map(_.map(r => MeshEntity(r.id, r.label, r.blob, r.thumbnail)))
+    }
 
   override def listMeshes(): Task[List[MeshEntry]] =
-    run(
-      quote(
-        for {
-          meshes <- query[MeshEntity]
-
-          organisations <- query[OrganisationEntity]
-                             .leftJoin(org => org.meshId == Some(meshes.id))
-                             .groupBy(o => (meshes.id, meshes.label, meshes.thumbnail, o.map(_.meshId)))
-                             .map { case (_, orgs) =>
-                               orgs.size
-                             }
-
-        } yield MeshEntry(meshes.id, meshes.label, meshes.thumbnail, organisations)
-      ).sortBy(_.id)
-    )
+    transact(transactor) {
+      sql"""
+        SELECT m.id, m.label, m.thumbnail, COUNT(o.id) as org_count
+        FROM meshes m
+        LEFT JOIN organisations o ON o.mesh_id = m.id
+        GROUP BY m.id, m.label, m.thumbnail
+        ORDER BY m.id
+      """
+        .query[(Mesh.Id, String, Option[String], Long)]
+        .run()
+        .map { case (id, label, thumbnail, count) =>
+          MeshEntry(id, label, thumbnail, count.toInt)
+        }
+    }
 
 object MeshRepositoryLive:
-  def layer: URLayer[Quill.Postgres[SnakeCase], MeshRepository] =
+  def layer: URLayer[Transactor, MeshRepository] =
     ZLayer.derive[MeshRepositoryLive]

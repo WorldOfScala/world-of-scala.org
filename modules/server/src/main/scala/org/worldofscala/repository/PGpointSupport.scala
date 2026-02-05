@@ -1,33 +1,25 @@
 package org.worldofscala.repository
 
-import io.getquill.*
+import com.augustnagro.magnum.*
 import org.postgresql.geometric.PGpoint
 import org.worldofscala.organisation.LatLon
-import io.getquill.jdbczio.Quill
+import java.sql.{PreparedStatement, ResultSet}
 
 trait PGpointSupport {
-  val quill: Quill.Postgres[SnakeCase] // your context should go here
+  val transactor: Transactor
 
-  import quill.*
-
-  given Decoder[LatLon] =
-    decoder((index, row, _) =>
-      val obj = row.getObject(index)
-      if (row.wasNull) {
+  given DbCodec[LatLon] = new DbCodec[LatLon] {
+    override def readSingle(rs: ResultSet, pos: Int): LatLon = {
+      val obj = rs.getObject(pos)
+      if (rs.wasNull()) {
         LatLon.empty
       } else {
         val point = obj.asInstanceOf[PGpoint]
         LatLon(point.x, point.y)
       }
-    )
-  given Encoder[LatLon] =
-    encoder(
-      java.sql.Types.OTHER,
-      (index, value, row) => row.setObject(index, value, java.sql.Types.OTHER)
-    ) // database-specific implementation
+    }
 
-  // Only for postgres
-  implicit def arrayLatLonEncoder[Col <: Seq[LatLon]]: Encoder[Col] = arrayRawEncoder[LatLon, Col]("PGpoint")
-  implicit def arrayLatLonDecoder[Col <: Seq[LatLon]](implicit bf: CBF[LatLon, Col]): Decoder[Col] =
-    arrayRawDecoder[LatLon, Col]
+    override def writeSingle(entity: LatLon, ps: PreparedStatement, pos: Int): Unit =
+      ps.setObject(pos, entity, java.sql.Types.OTHER)
+  }
 }

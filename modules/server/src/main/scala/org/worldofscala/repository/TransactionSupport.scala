@@ -1,10 +1,8 @@
 package org.worldofscala.repository
 
 import zio.Task
+import com.augustnagro.magnum.*
 
-import io.getquill.SnakeCase
-import io.getquill.jdbczio.Quill
-
-trait TransactionSupport(quill: Quill.Postgres[SnakeCase]) {
-  def tx[A](zio: Task[A]): Task[A] = quill.transaction(zio)
+trait TransactionSupport(transactor: Transactor) {
+  def tx[A](zio: Task[A]): Task[A] = transact(transactor)(zio.map(a => a))
 }

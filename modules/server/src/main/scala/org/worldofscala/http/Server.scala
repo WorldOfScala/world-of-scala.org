@@ -11,10 +11,9 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.config.ServerConfig
-import io.getquill.jdbczio.Quill.Postgres
+import com.augustnagro.magnum.Transactor
 
 import org.worldofscala.repository.Repository
-import io.getquill.SnakeCase
 
 object Server {
 
@@ -31,7 +30,7 @@ object Server {
       )
       .options
 
-  private def build: ZIO[ServerConfig & Postgres[SnakeCase], Throwable, Unit] = for {
+  private def build: ZIO[ServerConfig & Transactor, Throwable, Unit] = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
     apiEndpoints <- HttpApi.endpoints

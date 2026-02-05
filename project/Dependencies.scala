@@ -5,16 +5,15 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 object Dependencies {
   val Versions = new {
     val chimney               = "1.8.2"
-    val flywaydb              = "11.17.0"
+    val flywaydb              = "12.0.0"
     val frontroute            = "0.19.0"
     val iron                  = "3.2.1"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "1.4.0"
-    val logback               = "1.5.21"
+    val logback               = "1.5.27"
     val mUnit                 = "1.2.1"
     val osLib                 = "0.10.2"
-    val postgresql            = "42.7.8"
-    val quill                 = "4.8.6"
+    val postgresql            = "42.7.9"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
     val tapir                 = "1.13.4"
@@ -23,6 +22,7 @@ object Dependencies {
     val zioConfig             = "4.0.5"
     val zioLaminarTapir       = "5.1.0"
     val zioLogging            = "2.5.1"
+    val zioMagnum             = "1.3.0"
     val zioMock               = "1.0.0-RC12"
     val zioPrelude            = "1.0.0-RC44"
     val zioTestContainers     = "0.10.0"
@@ -47,8 +47,8 @@ object Dependencies {
     "ch.qos.logback" % "logback-classic"   % Versions.logback
   )
 
-  private val quillDependencies = Seq(
-    "io.getquill" %% "quill-jdbc-zio" % Versions.quill
+  private val magnumDependencies = Seq(
+    "dev.cheleb" %% "zio-magnum" % Versions.zioMagnum
   )
 
   private val jwtDependencies = Seq(
@@ -72,7 +72,7 @@ object Dependencies {
     ) ++
       configDependencies ++
       databaseDependencies ++
-      quillDependencies ++
+      magnumDependencies ++
       jwtDependencies ++
       loggingDependencies
 
