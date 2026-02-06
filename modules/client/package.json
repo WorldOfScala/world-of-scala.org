@@ -12,10 +12,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ui5/webcomponents": "2.19.0",
-    "@ui5/webcomponents-fiori": "2.19.0",
-    "@ui5/webcomponents-icons": "2.19.0",
-    "@ui5/webcomponents-compat": "2.19.0",
+    "@ui5/webcomponents": "2.19.1",
+    "@ui5/webcomponents-fiori": "2.19.1",
+    "@ui5/webcomponents-icons": "2.19.1",
+    "@ui5/webcomponents-compat": "2.19.1",
     "three": "0.182.0"
   },
   "devDependencies": {
