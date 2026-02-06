@@ -12,8 +12,6 @@ import org.worldofscala.user.*
 
 import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
-import io.getquill.jdbczio.Quill.Postgres
-import io.getquill.SnakeCase
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 type Deps = UserService & JWTService & OrganisationService & MeshService
@@ -47,7 +45,7 @@ object HttpApi extends Routes {
    * closed too early in the app lifecycle.
    */
   def endpoints =
-    gatherAllRoutes.provideSome[Postgres[SnakeCase]](
+    gatherAllRoutes.provide(
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,

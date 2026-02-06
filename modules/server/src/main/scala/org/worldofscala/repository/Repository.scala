@@ -12,20 +12,16 @@ object Repository {
     ZIO.fromAutoCloseable {
       ZIO.attempt {
         val config = new HikariConfig()
-        config.setJdbcUrl(sys.env.getOrElse("DB_JDBC_URL", "jdbc:postgresql://localhost:5432/worldofscala"))
-        config.setUsername(sys.env.getOrElse("DB_USER", "postgres"))
-        config.setPassword(sys.env.getOrElse("DB_PASSWORD", "postgres"))
+        config.setJdbcUrl(sys.env.getOrElse("DB_JDBC_URL", "jdbc:postgresql://localhost:5432/world-of-scala"))
+        config.setUsername(sys.env.getOrElse("DB_USER", "docker"))
+        config.setPassword(sys.env.getOrElse("DB_PASSWORD", "docker"))
         config.setMaximumPoolSize(10)
         new HikariDataSource(config)
       }
     }
   }
 
-  def transactorLayer: URLayer[DataSource, Transactor] = ZLayer.fromFunction { (ds: DataSource) =>
-    Transactor(ds)
-  }
-
-  def dataLayer: TaskLayer[Transactor] = datasourceLayer >>> transactorLayer
+  def dataLayer: TaskLayer[DataSource] = datasourceLayer
 }
 
 trait UUIDMapper[A](a2id: A => UUID, id2a: UUID => A) {

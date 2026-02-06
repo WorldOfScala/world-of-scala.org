@@ -24,7 +24,9 @@ class OrganisationController private (organisationService: OrganisationService, 
   }
 
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic { _ =>
-    organisationService.streamAll()
+    organisationService
+      .streamAll()
+
   }
 
   override val routes: List[ServerEndpoint[Any, Task]] =

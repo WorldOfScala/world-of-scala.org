@@ -48,7 +48,8 @@ object Dependencies {
   )
 
   private val magnumDependencies = Seq(
-    "dev.cheleb" %% "zio-magnum" % Versions.zioMagnum
+    "dev.cheleb"      %% "zio-magnum" % Versions.zioMagnum,
+    "com.augustnagro" %% "magnumpg"   % "2.0.0-M2"
   )
 
   private val jwtDependencies = Seq(

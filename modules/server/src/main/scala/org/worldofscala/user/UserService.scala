@@ -3,21 +3,16 @@ package org.worldofscala.user
 import zio.*
 
 import io.scalaland.chimney.dsl._
-import java.time.ZonedDateTime
 
 import org.worldofscala.auth.*
 
-import org.worldofscala.repository.TransactionSupport
-
 import java.sql.SQLException
-
-import io.getquill.jdbczio.Quill
-import io.getquill.SnakeCase
-import io.getquill.jdbczio.Quill.Postgres
 
 import org.worldofscala.domain.errors.{InvalidCredentialsException, UserNotFoundException, UserAlreadyExistsException}
 
 import dev.cheleb.ziochimney.*
+import org.worldofscala.repository.Repository
+import java.time.OffsetDateTime
 
 trait UserService {
   def register(person: NewUser): Task[User]
@@ -26,33 +21,30 @@ trait UserService {
 }
 
 class UserServiceLive private (
-  userRepository: UserRepository,
-  quill: Quill.Postgres[SnakeCase]
-) extends UserService
-    with TransactionSupport(quill) {
+  userRepository: UserRepository
+) extends UserService {
 
   def register(person: NewUser): Task[User] =
-    tx(
-      for {
-        _ <- ZIO.logDebug(s"Registering user: $person")
-        user <- userRepository
-                  .create(
-                    NewUserEntity(
-                      None,
-                      firstname = person.firstname,
-                      lastname = person.lastname,
-                      email = person.email,
-                      hashedPassword = Hasher.generatedHash(person.password.toString),
-                      creationDate = ZonedDateTime.now()
-                    )
+    for {
+      _    <- ZIO.logDebug(s"Registering user: $person")
+      user <- userRepository
+                .create(
+                  NewUserEntity(
+                    firstname = person.firstname,
+                    lastname = person.lastname,
+                    email = person.email,
+                    hashedPassword = Hasher.generatedHash(person.password.toString),
+                    creationDate = OffsetDateTime.now()
                   )
-                  .catchSome { case e: SQLException =>
-                    ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
-                      *> ZIO.fail(UserAlreadyExistsException())
-                  }
-                  .mapInto[User]
-      } yield user
-    )
+                )
+                .catchSome { case e: SQLException =>
+                  ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
+                    *> ZIO.fail(UserAlreadyExistsException())
+                }
+                .mapInto[User]
+                .provideLayer(Repository.dataLayer)
+    } yield user
+
   override def login(email: String, password: String): Task[User] =
     userRepository
       .findByEmail(email)
@@ -61,11 +53,13 @@ class UserServiceLive private (
       }
       .someOrFail(InvalidCredentialsException())
       .mapInto[User]
+      .provideLayer(Repository.dataLayer)
 
   override def getProfile(userId: UserID): Task[User] =
     for
       userEntity <- userRepository
                       .findByEmail(userId.email)
+                      .provideLayer(Repository.dataLayer)
                       .someOrFail(UserNotFoundException(userId.email))
       user = userEntity.into[User].transform
     yield user
@@ -73,6 +67,6 @@ class UserServiceLive private (
 }
 
 object UserServiceLive {
-  val layer: RLayer[UserRepository & Postgres[SnakeCase], UserService] =
+  val layer: RLayer[UserRepository, UserService] =
     ZLayer.derive[UserServiceLive]
 }

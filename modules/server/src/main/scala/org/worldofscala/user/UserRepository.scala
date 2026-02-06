@@ -2,106 +2,77 @@ package org.worldofscala.user
 
 import zio.*
 import com.augustnagro.magnum.*
+import com.augustnagro.magnum.ziomagnum.*
 import io.scalaland.chimney.dsl.*
 
 import org.worldofscala.repository.UUIDMapper
+import javax.sql.DataSource
+import io.scalaland.chimney.Transformer
 
 trait UserRepository {
-  def create(user: NewUserEntity): Task[UserEntity]
-  def getById(id: User.Id): Task[Option[UserEntity]]
-  def findByEmail(email: String): Task[Option[UserEntity]]
-  def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity]
-  def delete(id: User.Id): Task[UserEntity]
+  def create(user: NewUserEntity): RIO[DataSource, UserEntity]
+  def getById(id: User.Id): RIO[DataSource, Option[UserEntity]]
+  def findByEmail(email: String): RIO[DataSource, Option[UserEntity]]
+  def update(id: User.Id, op: UserEntity => UserEntity): RIO[DataSource, UserEntity]
+  def delete(id: User.Id): RIO[DataSource, UserEntity]
 }
 
-object UserRepository extends UUIDMapper[User.Id](identity, User.Id.apply)
-
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
-case class NewUserEntityRepo(
-  id: Option[User.Id],
+@SqlName("users")
+case class NewUserEntity(
   firstname: String,
   lastname: String,
   email: String,
   hashedPassword: String,
-  creationDate: java.time.ZonedDateTime
+  creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
-case class UserEntityRepo(
+@SqlName("users")
+case class UserEntity(
   @Id id: User.Id,
   firstname: String,
   lastname: String,
   email: String,
   hashedPassword: String,
-  creationDate: java.time.ZonedDateTime
+  creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-class UserRepositoryLive private (transactor: Transactor) extends UserRepository {
+object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
+  given Transformer[UserEntity, User] = Transformer.derive
 
-  import UserRepository.given
+class UserRepositoryLive private extends UserRepository {
 
-  override def create(user: NewUserEntity): Task[UserEntity] =
-    transact(transactor) {
-      val repo =
-        NewUserEntityRepo(user.id, user.firstname, user.lastname, user.email, user.hashedPassword, user.creationDate)
-      val created = repo.create
-      UserEntity(
-        created.id.get,
-        created.firstname,
-        created.lastname,
-        created.email,
-        created.hashedPassword,
-        created.creationDate
-      )
-    }
+  import UserEntity.given
 
-  override def getById(id: User.Id): Task[Option[UserEntity]] =
-    transact(transactor) {
-      sql"SELECT id, firstname, lastname, email, hashed_password, creation_date FROM users WHERE id = $id"
-        .query[UserEntityRepo]
-        .run()
-        .headOption
-        .map(_.map(r => UserEntity(r.id, r.firstname, r.lastname, r.email, r.hashedPassword, r.creationDate)))
-    }
+  val repo = Repo[NewUserEntity, UserEntity, User.Id]
 
-  override def findByEmail(email: String): Task[Option[UserEntity]] =
-    transact(transactor) {
-      sql"SELECT id, firstname, lastname, email, hashed_password, creation_date FROM users WHERE email = $email"
-        .query[UserEntityRepo]
-        .run()
-        .headOption
-        .map(_.map(r => UserEntity(r.id, r.firstname, r.lastname, r.email, r.hashedPassword, r.creationDate)))
-    }
+  override def create(user: NewUserEntity): RIO[DataSource, UserEntity] =
+    repo.zInsertReturning(user)
 
-  override def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity] =
+  override def getById(id: User.Id): RIO[DataSource, Option[UserEntity]] =
+    repo.zFindById(id)
+
+  override def findByEmail(email: String): RIO[DataSource, Option[UserEntity]] =
+    val uspec = Spec[UserEntity]
+      .where(sql"email = $email")
+    repo.zFindAll(uspec).map(_.headOption)
+
+  override def update(id: User.Id, op: UserEntity => UserEntity): RIO[DataSource, UserEntity] =
     for {
-      userEntity <- getById(id).someOrFail(new RuntimeException(s"User $id not found"))
+      userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       updated     = op(userEntity)
-      result     <- transact(transactor) {
-                  val repo = UserEntityRepo(
-                    updated.id,
-                    updated.firstname,
-                    updated.lastname,
-                    updated.email,
-                    updated.hashedPassword,
-                    updated.creationDate
-                  )
-                  repo.update
-                  updated
-                }
-    } yield result
+      _          <-
+        repo.zUpdate(updated)
+    } yield updated
 
-  override def delete(id: User.Id): Task[UserEntity] =
-    transact(transactor) {
-      sql"DELETE FROM users WHERE id = $id RETURNING id, firstname, lastname, email, hashed_password, creation_date"
-        .query[UserEntityRepo]
-        .run()
-        .headOption
-        .map(_.map(r => UserEntity(r.id, r.firstname, r.lastname, r.email, r.hashedPassword, r.creationDate)))
-        .getOrElse(throw new RuntimeException(s"User $id not found"))
-    }
+  override def delete(id: User.Id): RIO[DataSource, UserEntity] =
+    for {
+      userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
+      _          <- repo.zDeleteById(id)
+    } yield userEntity
 }
 
 object UserRepositoryLive {
-  def layer: RLayer[Transactor, UserRepository] = ZLayer.derive[UserRepositoryLive]
+  def layer: ULayer[UserRepository] = ZLayer.derive[UserRepositoryLive]
 }
