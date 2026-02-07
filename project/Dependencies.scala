@@ -22,7 +22,7 @@ object Dependencies {
     val zioConfig             = "4.0.5"
     val zioLaminarTapir       = "5.1.0"
     val zioLogging            = "2.5.1"
-    val zioMagnum             = "1.3.0"
+    val zioMagnum             = "1.4.0-local"
     val zioMock               = "1.0.0-RC12"
     val zioPrelude            = "1.0.0-RC44"
     val zioTestContainers     = "0.10.0"

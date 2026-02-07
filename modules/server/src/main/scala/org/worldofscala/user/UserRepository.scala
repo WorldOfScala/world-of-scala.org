@@ -41,13 +41,13 @@ case class UserEntity(
 object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
   given Transformer[UserEntity, User] = Transformer.derive
 
-class UserRepositoryLive private extends UserRepository {
+class UserRepositoryLive private (using DataSource) extends UserRepository {
 
   import UserEntity.given
 
   val repo = Repo[NewUserEntity, UserEntity, User.Id]
 
-  override def create(user: NewUserEntity): RIO[DataSource, UserEntity] =
+  override def create(user: NewUserEntity): Task[UserEntity] =
     repo.zInsertReturning(user)
 
   override def getById(id: User.Id): RIO[DataSource, Option[UserEntity]] =
@@ -74,5 +74,5 @@ class UserRepositoryLive private extends UserRepository {
 }
 
 object UserRepositoryLive {
-  def layer: ULayer[UserRepository] = ZLayer.derive[UserRepositoryLive]
+  def layer: URLayer[DataSource, UserRepository] = ZLayer.derive[UserRepositoryLive]
 }

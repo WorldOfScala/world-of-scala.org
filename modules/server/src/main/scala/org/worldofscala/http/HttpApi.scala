@@ -12,6 +12,7 @@ import org.worldofscala.user.*
 
 import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
+import javax.sql.DataSource
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 type Deps = UserService & JWTService & OrganisationService & MeshService
@@ -44,8 +45,8 @@ object HttpApi extends Routes {
    * This is critical, to not provide the Postgres layer too early, it would be
    * closed too early in the app lifecycle.
    */
-  def endpoints =
-    gatherAllRoutes.provide(
+  def endpoints: ZIO[DataSource, Throwable, List[ServerEndpoint[ZioStreams, Task]]] =
+    gatherAllRoutes.provideSome[DataSource](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,

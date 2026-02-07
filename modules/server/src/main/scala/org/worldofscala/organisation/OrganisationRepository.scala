@@ -50,7 +50,7 @@ case class OrganisationEntity(
 
 object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply)
 
-class OrganisationRepositoryLive private extends OrganisationRepository {
+class OrganisationRepositoryLive private (using DataSource) extends OrganisationRepository {
 
   import OrganisationEntity.given
 
@@ -61,7 +61,7 @@ class OrganisationRepositoryLive private extends OrganisationRepository {
       listAll()
     }
 
-  override def create(orga: NewOrganisationEntity): RIO[DataSource, OrganisationEntity] =
+  override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
     repo.zInsertReturning(orga)
 
   override def listAll(): RIO[DataSource, List[OrganisationEntity]] =
@@ -69,7 +69,7 @@ class OrganisationRepositoryLive private extends OrganisationRepository {
 }
 
 object OrganisationRepositoryLive {
-  def layer: ULayer[OrganisationRepository] =
+  def layer: URLayer[DataSource, OrganisationRepository] =
     ZLayer.derive[OrganisationRepositoryLive]
 }
 

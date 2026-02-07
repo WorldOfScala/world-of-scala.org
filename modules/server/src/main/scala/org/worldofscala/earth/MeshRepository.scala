@@ -32,8 +32,8 @@ case class MeshEntity(
   thumbnail: Option[String]
 ) derives DbCodec
 
-object MeshEntity                extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
-class MeshRepositoryLive private extends MeshRepository:
+object MeshEntity                                   extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
+class MeshRepositoryLive private (using DataSource) extends MeshRepository:
 
   import MeshEntity.given
   transparent inline given TransformerConfiguration[?] =
@@ -64,5 +64,5 @@ class MeshRepositoryLive private extends MeshRepository:
       }.toList)
 
 object MeshRepositoryLive:
-  def layer: ULayer[MeshRepository] =
+  def layer: URLayer[DataSource, MeshRepository] =
     ZLayer.derive[MeshRepositoryLive]

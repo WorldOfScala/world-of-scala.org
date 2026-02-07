@@ -11,6 +11,8 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.config.ServerConfig
+import javax.sql.DataSource
+import org.worldofscala.repository.Repository
 
 object Server {
 
@@ -27,7 +29,7 @@ object Server {
       )
       .options
 
-  private def build: ZIO[ServerConfig, Throwable, Unit] = for {
+  private def build: ZIO[ServerConfig & DataSource, Throwable, Unit] = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
     apiEndpoints <- HttpApi.endpoints
@@ -44,5 +46,5 @@ object Server {
   } yield ()
 
   def start: Task[Unit] = build
-    .provide(ServerConfig.layer)
+    .provide(ServerConfig.layer, Repository.datasourceLayer)
 }
