@@ -1,6 +1,8 @@
 import java.nio.charset.StandardCharsets
 import org.scalajs.linker.interface.ModuleSplitStyle
 
+import scala.util.Try
+
 import Dependencies._
 //
 // Will handle different build modes:
@@ -9,6 +11,8 @@ import Dependencies._
 // - dev:  development mode
 //
 import DeploymentSettings._
+
+val isCI = Try(sys.env.getOrElse("CI", "false").toBoolean).getOrElse(false)
 
 val scala3 = "3.8.1"
 
@@ -31,7 +35,10 @@ inThisBuild(
     ),
     run / fork := true,
     testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
-  )
+  ) ++ {
+    // Workaround to make it possible to use git worktrees.
+    if (isCI) Seq.empty else com.github.sbt.git.SbtGit.useReadableConsoleGit
+  }
 )
 
 //
@@ -60,7 +67,7 @@ lazy val root = project
 //
 lazy val server = project
   .in(file("modules/server"))
-  .enablePlugins(FullstackPlugin, SbtTwirl, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
+  .enablePlugins(FullstackPlugin, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
     fork := true,
     serverLibraryDependencies,
