@@ -3,7 +3,8 @@ package org.worldofscala.organisation
 import dev.cheleb.ziotapir.SecuredBaseController
 
 import zio.*
-
+import zio.json.*
+import zio.stream.ZStream
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 
@@ -26,6 +27,7 @@ class OrganisationController private (organisationService: OrganisationService, 
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic { _ =>
     organisationService
       .streamAll()
+      .map(_.flatMap(entity => ZStream.fromIterator((entity.toJson + "\n").getBytes().iterator)))
 
   }
 

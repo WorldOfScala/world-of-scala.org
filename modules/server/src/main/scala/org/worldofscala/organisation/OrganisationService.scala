@@ -1,36 +1,30 @@
 package org.worldofscala.organisation
 
 import zio.*
-import zio.json.*
 
 import io.scalaland.chimney.dsl.*
 import zio.stream.ZStream
 import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
-import org.worldofscala.repository.Repository
 
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
   def listAll(): Task[List[Organisation]]
-  def streamAll(): Task[ZStream[Any, Throwable, Byte]]
+  def streamAll(): Task[ZStream[Any, Throwable, Organisation]]
 
 }
 
 case class OrganisationServiceLive(organisationRepository: OrganisationRepository) extends OrganisationService {
 
-  override def streamAll(): Task[ZStream[Any, Throwable, Byte]] =
+  override def streamAll(): Task[ZStream[Any, Throwable, Organisation]] =
     ZIO
       .succeed(
         organisationRepository
           .streamAll()
-          .provideLayer(Repository.dataLayer)
-          .flatMap(entity =>
-            ZStream.fromIterable(
-              (entity
-                .into[Organisation]
-                .transform
-                .toJson + "\n").getBytes
-            )
+          .map(entity =>
+            entity
+              .into[Organisation]
+              .transform
           )
       )
 
@@ -43,7 +37,6 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
           .transform
       )
     )
-    .provide(Repository.dataLayer)
 
   override def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation] =
 
@@ -63,7 +56,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
           .into[Organisation]
           .transform
       )
-      .provide(Repository.dataLayer)
+
 }
 
 object OrganisationServiceLive:

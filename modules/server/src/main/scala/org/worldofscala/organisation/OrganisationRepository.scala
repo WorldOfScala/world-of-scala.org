@@ -19,9 +19,9 @@ import java.sql.ResultSet
 import java.sql.PreparedStatement
 
 trait OrganisationRepository {
-  def create(org: NewOrganisationEntity): RIO[DataSource, OrganisationEntity]
-  def listAll(): RIO[DataSource, List[OrganisationEntity]]
-  def streamAll(): ZStream[DataSource, Throwable, OrganisationEntity]
+  def create(org: NewOrganisationEntity): Task[OrganisationEntity]
+  def listAll(): Task[List[OrganisationEntity]]
+  def streamAll(): ZStream[Any, Throwable, OrganisationEntity]
 }
 
 import UserEntity.given
@@ -56,7 +56,7 @@ class OrganisationRepositoryLive private (using DataSource) extends Organisation
 
   val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
 
-  override def streamAll(): ZStream[DataSource, Throwable, OrganisationEntity] =
+  override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
     ZStream.fromIterableZIO {
       listAll()
     }
@@ -64,7 +64,7 @@ class OrganisationRepositoryLive private (using DataSource) extends Organisation
   override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
     repo.zInsertReturning(orga)
 
-  override def listAll(): RIO[DataSource, List[OrganisationEntity]] =
+  override def listAll(): Task[List[OrganisationEntity]] =
     repo.zFindAll.map(_.toList)
 }
 
