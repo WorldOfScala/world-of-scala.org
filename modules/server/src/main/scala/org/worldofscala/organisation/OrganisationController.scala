@@ -11,6 +11,8 @@ import sttp.tapir.ztapir.*
 import org.worldofscala.auth.*
 import org.worldofscala.user.UserID
 import sttp.capabilities.zio.ZioStreams
+import zio.stream.ZStream
+import zio.stream.ZPipeline
 
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
@@ -24,11 +26,25 @@ class OrganisationController private (organisationService: OrganisationService, 
   val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic:
     _ => organisationService.listAll()
 
+  extension [R, A: JsonEncoder](stream: ZStream[R, Throwable, A])
+
+    /**
+     * Converts a ZStream of JSON-encodable values to a ZStream of bytes
+     * representing JSON lines.
+     *
+     * @return
+     *   A ZStream of bytes representing JSON lines.
+     */
+    def toJsonLinesStream: ZStream[R, Throwable, Byte] =
+      stream >>> JsonEncoder[A].encodeJsonLinesPipeline >>> ZPipeline
+        .map[Char, Byte](_.toByte)
+
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic:
     _ =>
-      organisationService
-        .streamAll()
-        .toJsonLinesStream
+      ZIO.succeed:
+        organisationService
+          .streamAll()
+          .toJsonLinesStream
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, listAll)
