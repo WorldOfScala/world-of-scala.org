@@ -2,7 +2,7 @@ package org.worldofscala.organisation
 
 import zio.*
 
-import io.scalaland.chimney.dsl.*
+import dev.cheleb.ziochimney.*
 import zio.stream.ZStream
 import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
@@ -21,22 +21,12 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       .succeed(
         organisationRepository
           .streamAll()
-          .map(entity =>
-            entity
-              .into[Organisation]
-              .transform
-          )
+          .mapInto[Organisation]
       )
 
   override def listAll(): Task[List[Organisation]] = organisationRepository
     .listAll()
-    .map(entities =>
-      entities.map(entity =>
-        entity
-          .into[Organisation]
-          .transform
-      )
-    )
+    .mapInto[Organisation]
 
   override def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation] =
 
@@ -51,11 +41,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
 
     organisationRepository
       .create(organisationEntity)
-      .map(entity =>
-        entity
-          .into[Organisation]
-          .transform
-      )
+      .mapInto[Organisation]
 
 }
 

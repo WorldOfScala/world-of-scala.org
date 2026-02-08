@@ -17,6 +17,7 @@ import org.worldofscala.earth.MeshEntity
 import org.postgresql.geometric.PGpoint
 import java.sql.ResultSet
 import java.sql.PreparedStatement
+import io.scalaland.chimney.Transformer
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
@@ -48,7 +49,8 @@ case class OrganisationEntity(
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply)
+object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
+  given Transformer[OrganisationEntity, Organisation] = Transformer.derive
 
 class OrganisationRepositoryLive private (using DataSource) extends OrganisationRepository {
 

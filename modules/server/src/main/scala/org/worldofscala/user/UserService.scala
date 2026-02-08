@@ -2,7 +2,7 @@ package org.worldofscala.user
 
 import zio.*
 
-import io.scalaland.chimney.dsl._
+import io.scalaland.chimney.dsl.*
 
 import org.worldofscala.auth.*
 
@@ -37,9 +37,10 @@ class UserServiceLive private (
                     creationDate = OffsetDateTime.now()
                   )
                 )
-                .catchSome { case e: SQLException =>
-                  ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
-                    *> ZIO.fail(UserAlreadyExistsException())
+                .catchSome {
+                  case e: SQLException =>
+                    ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
+                      *> ZIO.fail(UserAlreadyExistsException())
                 }
                 .mapInto[User]
                 .provideLayer(Repository.dataLayer)
@@ -49,7 +50,9 @@ class UserServiceLive private (
     userRepository
       .findByEmail(email)
       .map {
-        _.filter(user => Hasher.validateHash(password, user.hashedPassword))
+        _.filter(
+          user => Hasher.validateHash(password, user.hashedPassword)
+        )
       }
       .someOrFail(InvalidCredentialsException())
       .mapInto[User]

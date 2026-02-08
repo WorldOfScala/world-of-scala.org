@@ -1,10 +1,10 @@
 package org.worldofscala.organisation
 
-import dev.cheleb.ziotapir.SecuredBaseController
+import dev.cheleb.ziotapir.*
 
 import zio.*
 import zio.json.*
-import zio.stream.ZStream
+
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 
@@ -15,21 +15,20 @@ import sttp.capabilities.zio.ZioStreams
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
-  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic {
-    userId => organisation =>
-      organisationService.create(organisation, userId.id)
-  }
+  val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic:
+    userId =>
+      organisation =>
+        organisationService
+          .create(organisation, userId.id)
 
-  val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic { _ =>
-    organisationService.listAll()
-  }
+  val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic:
+    _ => organisationService.listAll()
 
-  val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic { _ =>
-    organisationService
-      .streamAll()
-      .map(_.flatMap(entity => ZStream.fromIterator((entity.toJson + "\n").getBytes().iterator)))
-
-  }
+  val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic:
+    _ =>
+      organisationService
+        .streamAll()
+        .toJsonLinesStream
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, listAll)
