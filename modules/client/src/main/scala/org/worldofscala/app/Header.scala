@@ -88,7 +88,7 @@ object Header:
         .amend(
           onClick.mapTo(false) --> openPopoverBus
         ),
-      _.item(a("Organisation", href := "organisation/new")),
+      _.item(a("Organisation", href := "/organisation/new")),
       _.item(_.icon := IconName.log, "Sign out").amend(
         onClick --> { _ =>
           session.clearUserState()

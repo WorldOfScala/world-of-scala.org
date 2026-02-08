@@ -78,7 +78,7 @@ object Earth {
     val loader = new GLTFLoader()
 
     loader.load(
-      "//res/scala.glb",
+      "/res/scala.glb",
       (obj) => {
         addPinner(globeGroup, obj, LatLon(46.5188, 6.5593)) // Lauzane
       }
