@@ -42,7 +42,7 @@ object Hasher {
 
   private def compareArrays(a1: Array[Byte], a2: Array[Byte]): Boolean =
     val range = 0 until math.min(a1.length, a2.length)
-    val diff =
+    val diff  =
       range.foldLeft(a1.length ^ a2.length)((acc, i) => acc | (a1(i) ^ a2(i)))
     diff == 0
 
@@ -73,7 +73,7 @@ object Hasher {
     val iterations   = hashSegments(0).toInt
     val salt         = fromHex(hashSegments(1))
     val validHash    = fromHex(hashSegments(2))
-    val testHash = pbkdf2(
+    val testHash     = pbkdf2(
       string.toCharArray(),
       salt,
       iterations,

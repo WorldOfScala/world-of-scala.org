@@ -31,9 +31,12 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
     meshRepository
       .updateThumbnail(id, Some(String(thumbnail.readAllBytes())))
       .map(_ => id)
-      .provideLayer(Repository.dataLayer)
+
   def listAll(): Task[List[MeshEntry]] =
-    meshRepository.listMeshes().map(meshes => Mesh.defaulEntry :: meshes).provideLayer(Repository.dataLayer)
+    meshRepository
+      .listMeshes()
+      .map(meshes => Mesh.defaulEntry :: meshes)
+      .provideLayer(Repository.dataLayer)
 
 //   def streamAll(): Stream[Throwable, Byte] = ???
 

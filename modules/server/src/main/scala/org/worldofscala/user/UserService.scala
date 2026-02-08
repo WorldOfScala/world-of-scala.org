@@ -8,7 +8,7 @@ import org.worldofscala.auth.*
 
 import java.sql.SQLException
 
-import org.worldofscala.domain.errors.{InvalidCredentialsException, UserNotFoundException, UserAlreadyExistsException}
+import org.worldofscala.domain.errors.{InvalidCredentialsException, UserAlreadyExistsException, UserNotFoundException}
 
 import dev.cheleb.ziochimney.*
 import org.worldofscala.repository.Repository
@@ -37,10 +37,9 @@ class UserServiceLive private (
                     creationDate = OffsetDateTime.now()
                   )
                 )
-                .catchSome {
-                  case e: SQLException =>
-                    ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
-                      *> ZIO.fail(UserAlreadyExistsException())
+                .catchSome { case e: SQLException =>
+                  ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
+                    *> ZIO.fail(UserAlreadyExistsException())
                 }
                 .mapInto[User]
                 .provideLayer(Repository.dataLayer)
@@ -50,9 +49,7 @@ class UserServiceLive private (
     userRepository
       .findByEmail(email)
       .map {
-        _.filter(
-          user => Hasher.validateHash(password, user.hashedPassword)
-        )
+        _.filter(user => Hasher.validateHash(password, user.hashedPassword))
       }
       .someOrFail(InvalidCredentialsException())
       .mapInto[User]

@@ -12,13 +12,13 @@ import org.worldofscala.earth.Mesh
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
-    .tag("Admin")
+    .tag("Organisation")
     .name("organisation")
     .post
     .in("organisation")
     .in(
       jsonBody[NewOrganisation]
-        .description("Person to insert")
+        .description("Organisation to insert")
         .example(
           NewOrganisation(
             "EPFL",
@@ -28,10 +28,10 @@ object OrganisationEndpoint extends BaseEndpoint:
         )
     )
     .out(jsonBody[Organisation])
-    .description("Create person")
+    .description("Create organisation")
 
   val all: PublicEndpoint[Unit, Throwable, List[Organisation], Any] = baseEndpoint
-    .tag("Admin")
+    .tag("Organisation")
     .name("organisation")
     .get
     .in("organisation")
@@ -39,8 +39,8 @@ object OrganisationEndpoint extends BaseEndpoint:
     .description("Get all organisations")
 
   val allStream: Endpoint[Unit, Unit, Throwable, Stream[Throwable, Byte], ZioStreams] = baseEndpoint
-    .tag("Admin")
-    .name("organisation stream")
+    .tag("Organisation")
+    .name("Organisations stream")
     .get
     .in("organisation" / "stream")
     .out(streamBody(ZioStreams)(Schema.derived[Organisation], CodecFormat.TextEventStream()))

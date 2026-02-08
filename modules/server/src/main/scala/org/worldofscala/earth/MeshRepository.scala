@@ -10,11 +10,11 @@ import org.worldofscala.repository.UUIDMapper
 import javax.sql.DataSource
 
 trait MeshRepository:
-  def get(id: Mesh.Id): RIO[DataSource, Option[MeshEntity]]
-  def saveMesh(mesh: NewMeshEntity): RIO[DataSource, MeshEntity]
+  def get(id: Mesh.Id): Task[Option[MeshEntity]]
+  def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
-  def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): RIO[DataSource, Int]
-  def listMeshes(): RIO[DataSource, List[MeshEntry]]
+  def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int]
+  def listMeshes(): Task[List[MeshEntry]]
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("meshes")
@@ -41,16 +41,16 @@ class MeshRepositoryLive private (using DataSource) extends MeshRepository:
 
   val repo = Repo[NewMeshEntity, MeshEntity, Mesh.Id]
 
-  override def saveMesh(mesh: NewMeshEntity): RIO[DataSource, MeshEntity] =
+  override def saveMesh(mesh: NewMeshEntity): Task[MeshEntity] =
     repo.zInsertReturning(mesh)
 
-  override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): RIO[DataSource, Int] =
+  override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int] =
     sql"UPDATE meshes SET thumbnail = $thumbnail WHERE id = $id".zUpdate
 
-  override def get(id: Mesh.Id): RIO[DataSource, Option[MeshEntity]] =
+  override def get(id: Mesh.Id): Task[Option[MeshEntity]] =
     repo.zFindById(id)
 
-  override def listMeshes(): RIO[DataSource, List[MeshEntry]] =
+  override def listMeshes(): Task[List[MeshEntry]] =
     sql"""
         SELECT m.id, m.label, m.thumbnail, COUNT(o.id) as org_count
         FROM meshes m

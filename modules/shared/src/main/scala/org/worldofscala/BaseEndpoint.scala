@@ -11,6 +11,7 @@ trait BaseEndpoint {
 
   val baseSecuredEndpoint: Endpoint[String, Unit, Throwable, Unit, Any] =
     baseEndpoint
+      .tag("Admin")
       .securityIn(auth.bearer[String]())
 
 }

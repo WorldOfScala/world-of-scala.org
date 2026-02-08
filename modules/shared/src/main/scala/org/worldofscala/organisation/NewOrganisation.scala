@@ -9,7 +9,7 @@ import zio.prelude.magnolia.*
 
 import dev.cheleb.scalamigen.NoPanel
 
-import Math.{PI, cos, sin}
+import Math.{cos, sin, PI}
 import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
 
