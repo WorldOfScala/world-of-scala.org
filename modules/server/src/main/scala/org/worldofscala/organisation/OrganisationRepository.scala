@@ -59,9 +59,10 @@ class OrganisationRepositoryLive private (using DataSource) extends Organisation
   val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
 
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
-    ZStream.fromIterableZIO {
-      listAll()
-    }
+    sql"SELECT id, name, mesh_id, location, created_by, creation_dates FROM organisations".zStream[OrganisationEntity]()
+    // ZStream.fromIterableZIO {
+    //   listAll()
+    // }
 
   override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
     repo.zInsertReturning(orga)
