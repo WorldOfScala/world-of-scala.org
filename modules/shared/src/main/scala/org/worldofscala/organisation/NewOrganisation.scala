@@ -1,21 +1,19 @@
 package org.worldofscala.organisation
 
-import java.util.UUID
-
+import dev.cheleb.scalamigen.NoPanel
+import org.worldofscala.UUIDOpaque
+import org.worldofscala.earth.Mesh
+import org.worldofscala.user.User
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 import zio.prelude.*
+import zio.prelude.Debug.Repr
 import zio.prelude.magnolia.*
 
-import dev.cheleb.scalamigen.NoPanel
+import java.time.OffsetDateTime
+import java.util.UUID
 
 import Math.{cos, sin, PI}
-import org.worldofscala.user.User
-import org.worldofscala.earth.Mesh
-
-import org.worldofscala.UUIDOpaque
-import java.time.OffsetDateTime
-import zio.prelude.Debug.Repr
 
 @NoPanel
 case class NewOrganisation(

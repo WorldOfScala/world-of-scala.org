@@ -1,10 +1,12 @@
 package org.worldofscala.app.world
 
 import THREE.*
-import scala.scalajs.js
-import scalajs.js.JSConverters.*
 import org.scalajs.dom.window
 import org.worldofscala.organisation.LatLon
+
+import scala.scalajs.js
+
+import scalajs.js.JSConverters.*
 
 object SceneHelper {
 
@@ -21,7 +23,7 @@ object SceneHelper {
     pinner.lookAt(0, 0, 0)
 
     // Create tooltip but initially hide it
-    if (placeName.nonEmpty) {
+    if placeName.nonEmpty then {
       val tooltipSprite = createTextSprite(placeName)
       println("Sprite: " + tooltipSprite.id)
 

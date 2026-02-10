@@ -1,9 +1,10 @@
 package dev.cheleb.ziochimney
 
-import zio.*
 import io.scalaland.chimney.Transformer
-import scala.annotation.targetName
+import zio.*
 import zio.stream.ZStream
+
+import scala.annotation.targetName
 
 extension [R, A](zio: RIO[R, A])
   def mapInto[B](using transformer: Transformer[A, B]): RIO[R, B] =

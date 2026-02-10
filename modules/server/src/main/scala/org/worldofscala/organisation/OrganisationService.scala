@@ -1,11 +1,10 @@
 package org.worldofscala.organisation
 
-import zio.*
-
 import dev.cheleb.ziochimney.*
-import zio.stream.ZStream
-import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
+import org.worldofscala.user.User
+import zio.*
+import zio.stream.ZStream
 
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]

@@ -1,27 +1,22 @@
 package org.worldofscala.organisation
 
-import com.raquo.laminar.api.L.*
-
-import dev.cheleb.ziotapir.*
-import dev.cheleb.ziotapir.laminar.*
-import org.worldofscala.earth.MeshEndpoint
-import org.scalajs.dom.window
-import org.scalajs.dom
-
-import java.io.*
-
-import scala.scalajs.js.typedarray.*
-
+import THREE.*
 import be.doeraene.webcomponents.ui5.*
 import be.doeraene.webcomponents.ui5.configkeys.*
-
-import org.worldofscala.earth.Mesh as OrgaMesh
-
-import THREE.*
-import org.worldofscala.earth.MeshEntry
-import org.worldofscala.auth.UserToken
-import org.worldofscala.app.given
+import com.raquo.laminar.api.L.*
+import dev.cheleb.ziotapir.*
+import dev.cheleb.ziotapir.laminar.*
+import org.scalajs.dom
 import org.scalajs.dom.HTMLElement
+import org.scalajs.dom.window
+import org.worldofscala.app.given
+import org.worldofscala.auth.UserToken
+import org.worldofscala.earth.Mesh as OrgaMesh
+import org.worldofscala.earth.MeshEndpoint
+import org.worldofscala.earth.MeshEntry
+
+import java.io.*
+import scala.scalajs.js.typedarray.*
 
 object CreateMesh extends SecuredContent[UserToken]:
 
@@ -29,7 +24,7 @@ object CreateMesh extends SecuredContent[UserToken]:
   val fileVar: Var[Option[org.scalajs.dom.File]] = Var(None)
   val thumbnail                                  = Var("")
 
-  val meshes = EventBus[List[MeshEntry]]()
+  val meshes = EventBus[Seq[MeshEntry]]()
 
   private def reset() =
     name.set("")
@@ -100,14 +95,14 @@ object CreateMesh extends SecuredContent[UserToken]:
                       file.arrayBuffer().`then` { buffer =>
                         val in  = new ByteArrayInputStream(new Int8Array(buffer).toArray)
                         val in2 = new ByteArrayInputStream(thumbnail.signal.now().getBytes())
-                        val ios = for {
+                        val ios = for
                           id <- MeshEndpoint.streamCreate(name.now(), in)
                           _  <- MeshEndpoint.putThumbnail(id, in2)
                           ls <- MeshEndpoint.all(())
                           _   = meshes.emit(ls)
                           _   = reset()
                           _   = openPopoverBus.emit(None)
-                        } yield id
+                        yield id
                         ios.run
                       }
                     case None =>
@@ -144,7 +139,7 @@ object CreateMesh extends SecuredContent[UserToken]:
           "Rotate",
           checked := true,
           onChange.mapToChecked --> { checked =>
-            if (checked) {
+            if checked then {
               rotateX = 0.01;
               rotateY = 0.01;
             } else {

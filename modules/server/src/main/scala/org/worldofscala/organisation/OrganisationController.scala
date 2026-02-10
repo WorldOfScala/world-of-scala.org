@@ -1,17 +1,13 @@
 package org.worldofscala.organisation
 
 import dev.cheleb.ziotapir.*
-
-import zio.*
-import zio.json.*
-
-import sttp.tapir.server.ServerEndpoint
-
-import sttp.tapir.ztapir.*
-
 import org.worldofscala.auth.*
 import org.worldofscala.user.UserID
 import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.server.ServerEndpoint
+import sttp.tapir.ztapir.*
+import zio.*
+import zio.json.*
 import zio.stream.ZStream
 
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)

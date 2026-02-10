@@ -2,22 +2,19 @@ package org.worldofscala.organisation
 
 import com.augustnagro.magnum.*
 import com.augustnagro.magnum.ziomagnum.*
+import io.scalaland.chimney.Transformer
 import org.worldofscala.*
-import org.worldofscala.user.User
 import org.worldofscala.earth.Mesh
-
+import org.worldofscala.earth.MeshEntity
+import org.worldofscala.repository.*
+import org.worldofscala.user.User
+import org.worldofscala.user.UserEntity
 import zio.*
 import zio.stream.ZStream
 
-import org.worldofscala.repository.*
-import javax.sql.DataSource
-
-import org.worldofscala.user.UserEntity
-import org.worldofscala.earth.MeshEntity
-
-import java.sql.ResultSet
 import java.sql.PreparedStatement
-import io.scalaland.chimney.Transformer
+import java.sql.ResultSet
+import javax.sql.DataSource
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]

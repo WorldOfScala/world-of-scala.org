@@ -1,13 +1,10 @@
 package org.worldofscala.user
 
 import dev.cheleb.ziotapir.SecuredBaseController
-
-import zio.*
-
+import org.worldofscala.auth.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
-
-import org.worldofscala.auth.*
+import zio.*
 
 class UserController private (personService: UserService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {

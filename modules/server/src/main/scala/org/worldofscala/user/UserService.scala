@@ -1,17 +1,14 @@
 package org.worldofscala.user
 
+import dev.cheleb.ziochimney.*
+import io.scalaland.chimney.dsl.*
+import org.worldofscala.auth.*
+import org.worldofscala.domain.errors.InvalidCredentialsException
+import org.worldofscala.domain.errors.UserAlreadyExistsException
+import org.worldofscala.domain.errors.UserNotFoundException
 import zio.*
 
-import io.scalaland.chimney.dsl.*
-
-import org.worldofscala.auth.*
-
 import java.sql.SQLException
-
-import org.worldofscala.domain.errors.{InvalidCredentialsException, UserAlreadyExistsException, UserNotFoundException}
-
-import dev.cheleb.ziochimney.*
-
 import java.time.OffsetDateTime
 
 trait UserService {

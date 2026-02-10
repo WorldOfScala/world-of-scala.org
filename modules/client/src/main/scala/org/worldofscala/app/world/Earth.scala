@@ -1,27 +1,21 @@
 package org.worldofscala.app.world
 
-import org.scalajs.dom.window
-
 import THREE.*
-
 import com.raquo.laminar.api.L.*
-
-import dev.cheleb.ziotapir.*
-import dev.cheleb.ziotapir.laminar.*
-
-import dev.cheleb.zthreesjs.*
 import dev.cheleb.threesjs.*
-
-import scala.scalajs.js.Math.PI
-
+import dev.cheleb.ziotapir.*
+import dev.cheleb.ziotapir.BackendClientLive
+import dev.cheleb.ziotapir.laminar.*
+import dev.cheleb.zthreesjs.*
+import org.scalajs.dom.window
+import org.worldofscala.app.world.SceneHelper.*
+import org.worldofscala.earth.Mesh.Id as MeshId
+import org.worldofscala.organisation.LatLon
 import org.worldofscala.organisation.Organisation
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.*
-import org.worldofscala.organisation.LatLon
-import dev.cheleb.ziotapir.BackendClientLive
 
-import org.worldofscala.app.world.SceneHelper.*
-import org.worldofscala.earth.Mesh.Id as MeshId
+import scala.scalajs.js.Math.PI
 object Earth {
 
   val R = 1
@@ -146,11 +140,11 @@ object Earth {
             .mapError(error => new RuntimeException(s"Failed to load mesh for ${organisation.name}: ${error.message}"))
 
     }
-    for {
+    for
       (addToCache, obj) <- meshIO
       _                 <- ZIO.debug(s"Addings a ${organisation.name} at ${organisation.location}")
       _                 <- ZIO.succeed(addPinner(globeGroup, obj, organisation.location))
-    } yield
+    yield
       if addToCache then cache + (meshId -> obj)
       else cache
 

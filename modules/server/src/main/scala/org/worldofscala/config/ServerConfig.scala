@@ -1,8 +1,8 @@
 package org.worldofscala.config
 
 import zio.Config
-import zio.config.magnolia.deriveConfig
 import zio.ZLayer
+import zio.config.magnolia.deriveConfig
 
 final case class ServerConfig(port: Int)
 

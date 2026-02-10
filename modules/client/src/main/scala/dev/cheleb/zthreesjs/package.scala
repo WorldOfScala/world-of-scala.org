@@ -1,8 +1,8 @@
 package dev.cheleb.zthreesjs
 
-import zio.*
 import THREE.*
 import sttp.model.Uri
+import zio.*
 
 extension (loader: GLTFLoader)
   def zload(

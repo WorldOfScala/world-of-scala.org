@@ -1,9 +1,10 @@
 package org.worldofscala.earth
 
-import zio.*
-import java.io.InputStream
+import io.scalaland.chimney.dsl.*
 import org.worldofscala.earth.Mesh.Id
-import io.scalaland.chimney.dsl._
+import zio.*
+
+import java.io.InputStream
 
 trait MeshService:
   def createStream(name: String, stream: InputStream): Task[Mesh.Id]

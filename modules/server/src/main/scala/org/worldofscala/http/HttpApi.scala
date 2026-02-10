@@ -1,17 +1,15 @@
 package org.worldofscala.http
 
-import zio.*
-
 import dev.cheleb.ziotapir.*
-
 import org.worldofscala.auth.*
 import org.worldofscala.earth.*
 import org.worldofscala.health.HealthController
 import org.worldofscala.organisation.*
 import org.worldofscala.user.*
-
-import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.server.ServerEndpoint
+import zio.*
+
 import javax.sql.DataSource
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html

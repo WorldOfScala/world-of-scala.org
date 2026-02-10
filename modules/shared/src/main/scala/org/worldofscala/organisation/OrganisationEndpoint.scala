@@ -1,14 +1,13 @@
 package org.worldofscala.organisation
 
-import zio.*
-import sttp.tapir.*
-import sttp.tapir.json.zio.*
-import sttp.tapir.generic.auto.*
 import org.worldofscala.BaseEndpoint
-import sttp.capabilities.zio.ZioStreams
-
-import zio.stream.*
 import org.worldofscala.earth.Mesh
+import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.zio.*
+import zio.*
+import zio.stream.*
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint

@@ -1,20 +1,16 @@
 package org.worldofscala.app.signup
 
-import zio.prelude.*
-
 import be.doeraene.webcomponents.ui5.*
 import be.doeraene.webcomponents.ui5.configkeys.ToastPlacement
-
 import com.raquo.laminar.api.L.*
-
 import dev.cheleb.scalamigen.*
 import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
-
-import scala.concurrent.duration.DurationInt
-
 import org.worldofscala.app.given
 import org.worldofscala.user.*
+import zio.prelude.*
+
+import scala.concurrent.duration.DurationInt
 
 extension (v: Signal[Boolean])
   def mapTrueToSome[A](a: A) = v.map:

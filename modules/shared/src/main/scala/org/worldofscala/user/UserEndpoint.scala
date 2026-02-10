@@ -1,11 +1,11 @@
 package org.worldofscala.user
 
-import zio.*
-import sttp.tapir.*
-import sttp.tapir.json.zio.*
-import sttp.tapir.generic.auto.*
 import org.worldofscala.BaseEndpoint
 import org.worldofscala.auth.*
+import sttp.tapir.*
+import sttp.tapir.generic.auto.*
+import sttp.tapir.json.zio.*
+import zio.*
 
 object UserEndpoint extends BaseEndpoint:
 

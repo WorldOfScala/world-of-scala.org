@@ -86,6 +86,10 @@ val usedScalacOptions = Seq(
   "-language:higherKinds",
   "-language:implicitConversions",
   "-Xmax-inlines:64",
+  "-source",
+  "3.4-migration",
+  "-rewrite",
+  "-new-syntax",
   "-Wunused:all"
 )
 

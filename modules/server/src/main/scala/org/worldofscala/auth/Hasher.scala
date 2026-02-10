@@ -1,8 +1,8 @@
 package org.worldofscala.auth
 
+import java.security.SecureRandom
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
-import java.security.SecureRandom
 
 /**
  * Hasher is a utility object to hash and validate passwords.

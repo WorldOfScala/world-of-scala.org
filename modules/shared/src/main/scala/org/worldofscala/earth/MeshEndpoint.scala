@@ -1,15 +1,12 @@
 package org.worldofscala.earth
 
-import sttp.tapir.*
-
 import org.worldofscala.BaseEndpoint
-
+import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.*
 import sttp.tapir.json.zio.*
+import zio.stream.ZStream
 
 import java.io.InputStream
-
-import sttp.capabilities.zio.ZioStreams
-import zio.stream.ZStream
 
 object MeshEndpoint extends BaseEndpoint {
 

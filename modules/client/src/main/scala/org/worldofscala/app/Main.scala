@@ -1,8 +1,8 @@
 package org.worldofscala.app
 
 import com.raquo.laminar.api.L.*
-import org.scalajs.dom
 import frontroute.LinkHandler
+import org.scalajs.dom
 
 @main def main: Unit =
 

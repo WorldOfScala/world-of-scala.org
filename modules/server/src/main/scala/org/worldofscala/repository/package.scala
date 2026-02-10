@@ -1,10 +1,11 @@
 package org.worldofscala.repository
 
 import com.augustnagro.magnum.DbCodec
-import org.worldofscala.organisation.LatLon
 import org.postgresql.geometric.PGpoint
-import java.sql.ResultSet
+import org.worldofscala.organisation.LatLon
+
 import java.sql.PreparedStatement
+import java.sql.ResultSet
 
 implicit val lalDbCodec: DbCodec[LatLon] = new DbCodec[LatLon] {
 

@@ -1,10 +1,12 @@
 package org.worldofscala.repository
 
-import zio.*
 import com.augustnagro.magnum.*
-import com.zaxxer.hikari.{HikariConfig, HikariDataSource}
-import javax.sql.DataSource
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import zio.*
+
 import java.util.UUID
+import javax.sql.DataSource
 
 def datasourceLayer: TaskLayer[DataSource] = ZLayer.scoped {
   ZIO.fromAutoCloseable {

@@ -1,15 +1,12 @@
 package org.worldofscala.app
 
 import com.raquo.laminar.api.L.*
-
+import com.raquo.laminar.nodes.ReactiveHtmlElement
 import frontroute.*
-
 import org.scalajs.dom
-
+import org.scalajs.dom.HTMLElement
 import org.worldofscala.*
 import zio.ZIO
-import org.scalajs.dom.HTMLElement
-import com.raquo.laminar.nodes.ReactiveHtmlElement
 
 object Router:
   /*

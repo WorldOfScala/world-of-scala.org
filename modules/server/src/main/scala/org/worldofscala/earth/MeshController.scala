@@ -1,14 +1,12 @@
 package org.worldofscala.earth
 
-import org.worldofscala.auth.JWTService
 import dev.cheleb.ziotapir.SecuredBaseController
+import org.worldofscala.auth.JWTService
 import org.worldofscala.user.UserID
-
-import zio.*
-
+import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.*
 import sttp.tapir.ztapir.*
-import sttp.capabilities.zio.ZioStreams
+import zio.*
 import zio.stream.ZStream
 
 class MeshController private (meshService: MeshService, jwtService: JWTService)

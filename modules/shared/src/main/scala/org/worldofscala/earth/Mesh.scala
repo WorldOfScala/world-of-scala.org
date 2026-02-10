@@ -1,12 +1,11 @@
 package org.worldofscala.earth
 
-import java.util.UUID
-import zio.json.JsonCodec
-import sttp.tapir.Schema
-
-import sttp.tapir.Codec
-
 import org.worldofscala.UUIDOpaque
+import sttp.tapir.Codec
+import sttp.tapir.Schema
+import zio.json.JsonCodec
+
+import java.util.UUID
 
 final case class Mesh(id: Mesh.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
 final case class MeshEntry(id: Mesh.Id, label: String, thumbnail: Option[String], count: Long) derives JsonCodec, Schema

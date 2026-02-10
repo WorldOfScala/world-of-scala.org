@@ -1,7 +1,7 @@
 package org.worldofscala
 
-import sttp.tapir.*
 import org.worldofscala.domain.errors.HttpError
+import sttp.tapir.*
 
 trait BaseEndpoint {
   val baseEndpoint: Endpoint[Unit, Unit, Throwable, Unit, Any] = endpoint

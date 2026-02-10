@@ -2,11 +2,10 @@ package org.worldofscala.earth
 
 import com.augustnagro.magnum.*
 import com.augustnagro.magnum.ziomagnum.*
-
-import zio.*
 import io.scalaland.chimney.dsl.*
-
 import org.worldofscala.repository.UUIDMapper
+import zio.*
+
 import javax.sql.DataSource
 
 trait MeshRepository:

@@ -1,13 +1,13 @@
 package org.worldofscala.user
 
-import zio.*
 import com.augustnagro.magnum.*
 import com.augustnagro.magnum.ziomagnum.*
-import io.scalaland.chimney.dsl.*
-
-import org.worldofscala.repository.UUIDMapper
-import javax.sql.DataSource
 import io.scalaland.chimney.Transformer
+import io.scalaland.chimney.dsl.*
+import org.worldofscala.repository.UUIDMapper
+import zio.*
+
+import javax.sql.DataSource
 
 trait UserRepository {
   def create(user: NewUserEntity): Task[UserEntity]
