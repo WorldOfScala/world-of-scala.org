@@ -41,7 +41,7 @@ case class UserEntity(
 object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
   given Transformer[UserEntity, User] = Transformer.derive
 
-class UserRepositoryLive private (using DataSource) extends UserRepository {
+private class UserRepositoryLive private (using DataSource) extends UserRepository {
 
   import UserEntity.given
 
@@ -59,18 +59,18 @@ class UserRepositoryLive private (using DataSource) extends UserRepository {
     repo.zFindAll(uspec).map(_.headOption)
 
   override def update(id: User.Id, op: UserEntity => UserEntity): RIO[DataSource, UserEntity] =
-    for {
+    for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       updated     = op(userEntity)
       _          <-
         repo.zUpdate(updated)
-    } yield updated
+    yield updated
 
   override def delete(id: User.Id): RIO[DataSource, UserEntity] =
-    for {
+    for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       _          <- repo.zDeleteById(id)
-    } yield userEntity
+    yield userEntity
 }
 
 object UserRepositoryLive {
