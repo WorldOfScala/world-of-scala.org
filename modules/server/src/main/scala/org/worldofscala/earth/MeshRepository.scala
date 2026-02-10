@@ -60,7 +60,7 @@ class MeshRepositoryLive private (using DataSource) extends MeshRepository:
       """
       .zQuery[(Mesh.Id, String, Option[String], Long)]
       .map(_.map { case (id, label, thumbnail, count) =>
-        MeshEntry(id, label, thumbnail, count.toInt)
+        MeshEntry(id, label, thumbnail, count)
       }.toList)
 
 object MeshRepositoryLive:
