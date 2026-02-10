@@ -30,12 +30,12 @@ object OrganisationEndpoint extends BaseEndpoint:
     .out(jsonBody[Organisation])
     .description("Create organisation")
 
-  val all: PublicEndpoint[Unit, Throwable, List[Organisation], Any] = baseEndpoint
+  val all: PublicEndpoint[Unit, Throwable, Seq[Organisation], Any] = baseEndpoint
     .tag("Organisation")
     .name("organisation")
     .get
     .in("organisation")
-    .out(jsonBody[List[Organisation]])
+    .out(jsonBody[Seq[Organisation]])
     .description("Get all organisations")
 
   val allStream: Endpoint[Unit, Unit, Throwable, Stream[Throwable, Byte], ZioStreams] = baseEndpoint

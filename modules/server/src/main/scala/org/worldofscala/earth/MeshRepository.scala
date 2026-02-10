@@ -14,7 +14,7 @@ trait MeshRepository:
   def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
   def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int]
-  def listMeshes(): Task[List[MeshEntry]]
+  def listMeshes(): Task[Vector[MeshEntry]]
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("meshes")
@@ -50,7 +50,9 @@ class MeshRepositoryLive private (using DataSource) extends MeshRepository:
   override def get(id: Mesh.Id): Task[Option[MeshEntity]] =
     repo.zFindById(id)
 
-  override def listMeshes(): Task[List[MeshEntry]] =
+  private given DbCodec[MeshEntry] = DbCodec.derived[MeshEntry]
+
+  override def listMeshes(): Task[Vector[MeshEntry]] =
     sql"""
         SELECT m.id, m.label, m.thumbnail, COUNT(o.id) as org_count
         FROM meshes m
@@ -58,10 +60,7 @@ class MeshRepositoryLive private (using DataSource) extends MeshRepository:
         GROUP BY m.id, m.label, m.thumbnail
         ORDER BY m.id
       """
-      .zQuery[(Mesh.Id, String, Option[String], Long)]
-      .map(_.map { case (id, label, thumbnail, count) =>
-        MeshEntry(id, label, thumbnail, count)
-      }.toList)
+      .zQuery[MeshEntry]
 
 object MeshRepositoryLive:
   def layer: URLayer[DataSource, MeshRepository] =

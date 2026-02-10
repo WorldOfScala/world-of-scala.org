@@ -9,7 +9,7 @@ import org.worldofscala.earth.Mesh
 
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
-  def listAll(): Task[List[Organisation]]
+  def listAll(): Task[Seq[Organisation]]
   def streamAll(): ZStream[Any, Throwable, Organisation]
 
 }
@@ -21,7 +21,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
       .streamAll()
       .mapInto[Organisation]
 
-  override def listAll(): Task[List[Organisation]] = organisationRepository
+  override def listAll(): Task[Seq[Organisation]] = organisationRepository
     .listAll()
     .mapInto[Organisation]
 

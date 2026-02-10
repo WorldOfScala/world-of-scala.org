@@ -10,7 +10,7 @@ trait MeshService:
   def createStream(name: String, stream: InputStream): Task[Mesh.Id]
   def updateThumnail(id: Mesh.Id, thumbnail: InputStream): Task[Mesh.Id]
   def get(id: Mesh.Id): Task[Mesh]
-  def listAll(): Task[List[MeshEntry]]
+  def listAll(): Task[Seq[MeshEntry]]
 
 case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
 
@@ -32,13 +32,10 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
       .updateThumbnail(id, Some(String(thumbnail.readAllBytes())))
       .map(_ => id)
 
-  def listAll(): Task[List[MeshEntry]] =
+  def listAll(): Task[Seq[MeshEntry]] =
     meshRepository
       .listMeshes()
-      .map(meshes => Mesh.defaulEntry :: meshes)
-      .provideLayer(Repository.dataLayer)
-
-//   def streamAll(): Stream[Throwable, Byte] = ???
+      .map(meshes => Mesh.defaulEntry +: meshes)
 
 }
 

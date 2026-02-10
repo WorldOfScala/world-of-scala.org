@@ -21,7 +21,7 @@ import io.scalaland.chimney.Transformer
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
-  def listAll(): Task[List[OrganisationEntity]]
+  def listAll(): Task[Seq[OrganisationEntity]]
   def streamAll(): ZStream[Any, Throwable, OrganisationEntity]
 }
 
@@ -60,15 +60,12 @@ class OrganisationRepositoryLive private (using DataSource) extends Organisation
 
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
     sql"SELECT id, name, mesh_id, location, created_by, creation_date FROM organisations".zStream[OrganisationEntity]()
-    // ZStream.fromIterableZIO {
-    //   listAll()
-    // }
 
   override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
     repo.zInsertReturning(orga)
 
-  override def listAll(): Task[List[OrganisationEntity]] =
-    repo.zFindAll.map(_.toList)
+  override def listAll(): Task[Vector[OrganisationEntity]] =
+    repo.zFindAll
 }
 
 object OrganisationRepositoryLive {
