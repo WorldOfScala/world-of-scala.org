@@ -4,7 +4,6 @@ import zio.*
 import java.io.InputStream
 import org.worldofscala.earth.Mesh.Id
 import io.scalaland.chimney.dsl._
-import org.worldofscala.repository.Repository
 
 trait MeshService:
   def createStream(name: String, stream: InputStream): Task[Mesh.Id]
@@ -16,7 +15,6 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
 
   override def get(id: Id): Task[Mesh] = meshRepository
     .get(id)
-    .provideLayer(Repository.dataLayer)
     .someOrFail(new Exception("Mesh not found"))
     .map(_.into[Mesh].transform)
 
@@ -25,7 +23,6 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
     meshRepository
       .saveMesh(newMeshEntity)
       .map(_.id)
-      .provideLayer(Repository.dataLayer)
 
   def updateThumnail(id: Id, thumbnail: InputStream): Task[Mesh.Id] =
     meshRepository

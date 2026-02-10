@@ -11,7 +11,7 @@ import java.sql.SQLException
 import org.worldofscala.domain.errors.{InvalidCredentialsException, UserAlreadyExistsException, UserNotFoundException}
 
 import dev.cheleb.ziochimney.*
-import org.worldofscala.repository.Repository
+
 import java.time.OffsetDateTime
 
 trait UserService {
@@ -42,7 +42,7 @@ class UserServiceLive private (
                     *> ZIO.fail(UserAlreadyExistsException())
                 }
                 .mapInto[User]
-                .provideLayer(Repository.dataLayer)
+
     } yield user
 
   override def login(email: String, password: String): Task[User] =
@@ -53,13 +53,11 @@ class UserServiceLive private (
       }
       .someOrFail(InvalidCredentialsException())
       .mapInto[User]
-      .provideLayer(Repository.dataLayer)
 
   override def getProfile(userId: UserID): Task[User] =
     for
       userEntity <- userRepository
                       .findByEmail(userId.email)
-                      .provideLayer(Repository.dataLayer)
                       .someOrFail(UserNotFoundException(userId.email))
       user = userEntity.into[User].transform
     yield user

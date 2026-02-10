@@ -3,6 +3,7 @@ package org.worldofscala.http
 import zio.*
 import zio.http.*
 
+import javax.sql.DataSource
 import sttp.tapir.*
 import sttp.tapir.files.*
 import sttp.tapir.server.ziohttp.*
@@ -11,8 +12,7 @@ import sttp.tapir.server.interceptor.cors.CORSInterceptor
 
 import org.worldofscala.observability.*
 import org.worldofscala.config.ServerConfig
-import javax.sql.DataSource
-import org.worldofscala.repository.Repository
+import org.worldofscala.repository.*
 
 object Server {
 
@@ -46,5 +46,5 @@ object Server {
   } yield ()
 
   def start: Task[Unit] = build
-    .provide(ServerConfig.layer, Repository.datasourceLayer)
+    .provide(ServerConfig.layer, datasourceLayer)
 }

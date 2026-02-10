@@ -10,11 +10,11 @@ import javax.sql.DataSource
 import io.scalaland.chimney.Transformer
 
 trait UserRepository {
-  def create(user: NewUserEntity): RIO[DataSource, UserEntity]
-  def getById(id: User.Id): RIO[DataSource, Option[UserEntity]]
-  def findByEmail(email: String): RIO[DataSource, Option[UserEntity]]
-  def update(id: User.Id, op: UserEntity => UserEntity): RIO[DataSource, UserEntity]
-  def delete(id: User.Id): RIO[DataSource, UserEntity]
+  def create(user: NewUserEntity): Task[UserEntity]
+  def getById(id: User.Id): Task[Option[UserEntity]]
+  def findByEmail(email: String): Task[Option[UserEntity]]
+  def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity]
+  def delete(id: User.Id): Task[UserEntity]
 }
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
@@ -50,15 +50,15 @@ private class UserRepositoryLive private (using DataSource) extends UserReposito
   override def create(user: NewUserEntity): Task[UserEntity] =
     repo.zInsertReturning(user)
 
-  override def getById(id: User.Id): RIO[DataSource, Option[UserEntity]] =
+  override def getById(id: User.Id): Task[Option[UserEntity]] =
     repo.zFindById(id)
 
-  override def findByEmail(email: String): RIO[DataSource, Option[UserEntity]] =
+  override def findByEmail(email: String): Task[Option[UserEntity]] =
     val uspec = Spec[UserEntity]
       .where(sql"email = $email")
     repo.zFindAll(uspec).map(_.headOption)
 
-  override def update(id: User.Id, op: UserEntity => UserEntity): RIO[DataSource, UserEntity] =
+  override def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity] =
     for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       updated     = op(userEntity)
@@ -66,7 +66,7 @@ private class UserRepositoryLive private (using DataSource) extends UserReposito
         repo.zUpdate(updated)
     yield updated
 
-  override def delete(id: User.Id): RIO[DataSource, UserEntity] =
+  override def delete(id: User.Id): Task[UserEntity] =
     for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       _          <- repo.zDeleteById(id)
