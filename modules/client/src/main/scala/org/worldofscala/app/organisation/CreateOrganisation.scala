@@ -1,21 +1,15 @@
 package org.worldofscala.organisation
 
 import be.doeraene.webcomponents.ui5.*
-//import be.doeraene.webcomponents.ui5.configkeys.ToastPlacement
-
 import com.raquo.laminar.api.L.*
-
 import dev.cheleb.scalamigen.*
 import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
-
 import org.worldofscala.app.given
-
+import org.worldofscala.auth.UserToken
 import org.worldofscala.earth.Mesh
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
-
-import org.worldofscala.auth.UserToken
 
 object CreateOrganisation extends SecuredContent[UserToken]:
 
@@ -41,7 +35,7 @@ object CreateOrganisation extends SecuredContent[UserToken]:
   given Defaultable[LatLon] with
     def default = LatLon(46.5188, 6.5593)
 
-  val meshes = EventBus[List[MeshEntry]]()
+  val meshes = EventBus[Seq[MeshEntry]]()
 
   override def init: Unit =
     MeshEndpoint.all(()).emit(meshes)

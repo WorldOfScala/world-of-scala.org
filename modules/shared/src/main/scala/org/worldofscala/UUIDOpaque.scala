@@ -1,9 +1,10 @@
 package org.worldofscala
 
-import zio.json.JsonCodec
 import sttp.tapir.Schema
-import zio.prelude.Debug.Repr
+import zio.json.JsonCodec
 import zio.prelude.*
+import zio.prelude.Debug.Repr
+
 import java.util.UUID
 
 trait UUIDOpaque[ID <: UUID](json: JsonCodec[ID], schema: Schema[ID]):

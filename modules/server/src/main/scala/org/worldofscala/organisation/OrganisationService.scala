@@ -1,45 +1,28 @@
 package org.worldofscala.organisation
 
-import zio.*
-import zio.json.*
-
-import io.scalaland.chimney.dsl.*
-import zio.stream.ZStream
-import org.worldofscala.user.User
+import dev.cheleb.ziochimney.*
 import org.worldofscala.earth.Mesh
+import org.worldofscala.user.User
+import zio.*
+import zio.stream.ZStream
 
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
-  def listAll(): Task[List[Organisation]]
-  def streamAll(): Task[ZStream[Any, Throwable, Byte]]
+  def listAll(): Task[Seq[Organisation]]
+  def streamAll(): ZStream[Any, Throwable, Organisation]
 
 }
 
 case class OrganisationServiceLive(organisationRepository: OrganisationRepository) extends OrganisationService {
 
-  override def streamAll(): Task[ZStream[Any, Throwable, Byte]] =
-    ZIO.succeed(
-      organisationRepository
-        .streamAll()
-        .flatMap(entity =>
-          ZStream.fromIterable(
-            (entity
-              .into[Organisation]
-              .transform
-              .toJson + "\n").getBytes
-          )
-        )
-    )
+  override def streamAll(): ZStream[Any, Throwable, Organisation] =
+    organisationRepository
+      .streamAll()
+      .mapInto[Organisation]
 
-  override def listAll(): Task[List[Organisation]] = organisationRepository
+  override def listAll(): Task[Seq[Organisation]] = organisationRepository
     .listAll()
-    .map(entities =>
-      entities.map(entity =>
-        entity
-          .into[Organisation]
-          .transform
-      )
-    )
+    .mapInto[Organisation]
 
   override def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation] =
 
@@ -48,16 +31,14 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
         createdBy = userUUID,
         name = organisation.name,
         location = organisation.location,
-        meshId = Some(organisation.meshId).filterNot(_ == Mesh.default)
+        meshId = Some(organisation.meshId).filterNot(_ == Mesh.default),
+        creationDate = java.time.OffsetDateTime.now()
       )
 
     organisationRepository
       .create(organisationEntity)
-      .map(entity =>
-        entity
-          .into[Organisation]
-          .transform
-      )
+      .mapInto[Organisation]
+
 }
 
 object OrganisationServiceLive:

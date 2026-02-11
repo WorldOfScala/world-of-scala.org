@@ -1,11 +1,10 @@
 package org.worldofscala
 
+import org.worldofscala.http.Server
+import org.worldofscala.services.FlywayService
 import zio.*
 import zio.logging.LogFormat
 import zio.logging.backend.SLF4J
-
-import org.worldofscala.http.Server
-import org.worldofscala.services.FlywayService
 
 object HttpServer extends ZIOAppDefault:
 

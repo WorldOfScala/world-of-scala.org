@@ -1,66 +1,66 @@
 package org.worldofscala.earth
 
-import io.getquill.*
-import io.getquill.jdbczio.Quill
-
-import org.worldofscala.earth.Mesh.*
-
-import zio.*
+import com.augustnagro.magnum.*
+import com.augustnagro.magnum.ziomagnum.*
 import io.scalaland.chimney.dsl.*
-import org.worldofscala.organisation.OrganisationEntity
 import org.worldofscala.repository.UUIDMapper
+import zio.*
+
+import javax.sql.DataSource
 
 trait MeshRepository:
   def get(id: Mesh.Id): Task[Option[MeshEntity]]
   def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
-  def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Unit]
-  def listMeshes(): Task[List[MeshEntry]]
+  def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int]
+  def listMeshes(): Task[Vector[MeshEntry]]
 
-object MeshRepository extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("meshes")
+case class NewMeshEntity(
+  label: String,
+  blob: Array[Byte]
+) derives DbCodec
 
-class MeshRepositoryLive private (val quill: Quill.Postgres[SnakeCase]) extends MeshRepository:
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("meshes")
+case class MeshEntity(
+  @Id id: Mesh.Id,
+  label: String,
+  blob: Array[Byte],
+  thumbnail: Option[String]
+) derives DbCodec
 
-  import quill.*
+object MeshEntity                                   extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
+class MeshRepositoryLive private (using DataSource) extends MeshRepository:
 
-  import MeshRepository.given
-
-  inline given SchemaMeta[NewMeshEntity]      = schemaMeta[NewMeshEntity]("meshes")
-  inline given InsertMeta[NewMeshEntity]      = insertMeta[NewMeshEntity](_.id)
-  inline given SchemaMeta[MeshEntity]         = schemaMeta[MeshEntity]("meshes")
-  inline given SchemaMeta[OrganisationEntity] = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[MeshEntity]         = updateMeta[MeshEntity](_.id)
-
+  import MeshEntity.given
   transparent inline given TransformerConfiguration[?] =
     TransformerConfiguration.default.enableOptionDefaultsToNone
+
+  val repo = Repo[NewMeshEntity, MeshEntity, Mesh.Id]
+
   override def saveMesh(mesh: NewMeshEntity): Task[MeshEntity] =
-    run(query[NewMeshEntity].insertValue(lift(mesh)).returning(r => r))
-      .map(r => r.intoPartial[MeshEntity].transform.asOption)
-      .someOrFail(new RuntimeException(""))
+    repo.zInsertReturning(mesh)
 
-  override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Unit] =
-    run(query[MeshEntity].filter(_.id == lift(id)).update(m => m.thumbnail -> lift(thumbnail))).unit
+  override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int] =
+    sql"UPDATE meshes SET thumbnail = $thumbnail WHERE id = $id".zUpdate
 
-  override def get(id: Id): Task[Option[MeshEntity]] =
-    run(query[MeshEntity].filter(_.id == lift(id))).map(_.headOption)
+  override def get(id: Mesh.Id): Task[Option[MeshEntity]] =
+    repo.zFindById(id)
 
-  override def listMeshes(): Task[List[MeshEntry]] =
-    run(
-      quote(
-        for {
-          meshes <- query[MeshEntity]
+  private given DbCodec[MeshEntry] = DbCodec.derived[MeshEntry]
 
-          organisations <- query[OrganisationEntity]
-                             .leftJoin(org => org.meshId == Some(meshes.id))
-                             .groupBy(o => (meshes.id, meshes.label, meshes.thumbnail, o.map(_.meshId)))
-                             .map { case (_, orgs) =>
-                               orgs.size
-                             }
-
-        } yield MeshEntry(meshes.id, meshes.label, meshes.thumbnail, organisations)
-      ).sortBy(_.id)
-    )
+  override def listMeshes(): Task[Vector[MeshEntry]] =
+    sql"""
+        SELECT m.id, m.label, m.thumbnail, COUNT(o.id) as org_count
+        FROM meshes m
+        LEFT JOIN organisations o ON o.mesh_id = m.id
+        GROUP BY m.id, m.label, m.thumbnail
+        ORDER BY m.id
+      """
+      .zQuery[MeshEntry]
 
 object MeshRepositoryLive:
-  def layer: URLayer[Quill.Postgres[SnakeCase], MeshRepository] =
+  def layer: URLayer[DataSource, MeshRepository] =
     ZLayer.derive[MeshRepositoryLive]

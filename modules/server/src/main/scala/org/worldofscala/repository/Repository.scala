@@ -1,27 +1,28 @@
 package org.worldofscala.repository
 
+import com.augustnagro.magnum.*
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import zio.*
 
-import io.getquill.SnakeCase
-import io.getquill.jdbczio.Quill
-import io.getquill.jdbczio.Quill.Postgres
-import javax.sql.DataSource
 import java.util.UUID
-import io.getquill.MappedEncoding
+import javax.sql.DataSource
 
-object Repository {
-
-  def quillLayer: URLayer[DataSource, Postgres[SnakeCase.type]] = Quill.Postgres.fromNamingStrategy(SnakeCase)
-
-  private def datasourceLayer: TaskLayer[DataSource] = Quill.DataSource.fromPrefix("db")
-
-  def dataLayer: TaskLayer[Postgres[SnakeCase.type]] = datasourceLayer >>> quillLayer
+def datasourceLayer: TaskLayer[DataSource] = ZLayer.scoped {
+  ZIO.fromAutoCloseable {
+    ZIO.attempt {
+      val config = new HikariConfig()
+      config.setJdbcUrl(sys.env.getOrElse("DB_JDBC_URL", "jdbc:postgresql://localhost:5432/world-of-scala"))
+      config.setUsername(sys.env.getOrElse("DB_USER", "docker"))
+      config.setPassword(sys.env.getOrElse("DB_PASSWORD", "docker"))
+      config.setMaximumPoolSize(10)
+      new HikariDataSource(config)
+    }
+  }
 }
 
-trait UUIDMapper[A](a2id: A => UUID, id2a: UUID => A) {
-  given MappedEncoding[A, UUID] =
-    MappedEncoding[A, UUID](a2id)
-  given MappedEncoding[UUID, A] =
-    MappedEncoding[UUID, A](id2a)
+def dataLayer: TaskLayer[DataSource] = datasourceLayer
 
+trait UUIDMapper[A](a2id: A => UUID, id2a: UUID => A) {
+  given DbCodec[A] = DbCodec.UUIDCodec.biMap[A](id2a, a2id)
 }

@@ -2,11 +2,9 @@ package org.worldofscala.app
 
 import dev.cheleb.scalamigen.*
 import dev.cheleb.scalamigen.ui5.UI5WidgetFactory
-
 import dev.cheleb.ziotapir.*
-
-import org.worldofscala.user.*
-import org.worldofscala.auth.*
+import org.worldofscala.auth.UserToken
+import org.worldofscala.user.Password
 
 given Form[Password] = secretForm(Password(_))
 

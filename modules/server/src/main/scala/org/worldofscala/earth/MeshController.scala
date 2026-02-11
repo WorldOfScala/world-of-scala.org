@@ -1,36 +1,28 @@
 package org.worldofscala.earth
 
-import org.worldofscala.auth.JWTService
 import dev.cheleb.ziotapir.SecuredBaseController
+import org.worldofscala.auth.JWTService
 import org.worldofscala.user.UserID
-
-import zio.*
-
+import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.*
 import sttp.tapir.ztapir.*
-import sttp.capabilities.zio.ZioStreams
+import zio.*
 import zio.stream.ZStream
 
 class MeshController private (meshService: MeshService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
 
-  val listAll: ServerEndpoint[Any, Task] = MeshEndpoint.all.zServerLogic { _ =>
+  private val listAll: ServerEndpoint[Any, Task] = MeshEndpoint.all.zServerLogic: _ =>
     meshService.listAll()
-  }
 
-  val createStream: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.streamCreate.zServerAuthenticatedLogic {
-    _ => (name, stream) =>
-      meshService.createStream(name, stream)
-  }
+  val createStream: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.streamCreate.zServerAuthenticatedLogic: _ =>
+    (name, stream) => meshService.createStream(name, stream)
 
-  val putThumbnail: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.putThumbnail.zServerAuthenticatedLogic {
-    _ => (name, thumbnail) =>
-      meshService.updateThumnail(name, thumbnail)
-  }
+  private val putThumbnail: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.putThumbnail.zServerAuthenticatedLogic: _ =>
+    (name, thumbnail) => meshService.updateThumnail(name, thumbnail)
 
-  val get: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.get.zServerLogic { id =>
+  private val get: ZServerEndpoint[Any, ZioStreams] = MeshEndpoint.get.zServerLogic: id =>
     meshService.get(id).map(_.blob).map(ZStream.fromIterable)
-  }
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(listAll)

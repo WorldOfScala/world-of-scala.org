@@ -1,9 +1,9 @@
 package org.worldofscala.observability
 
-import zio.*
-import sttp.tapir.ztapir.ZServerEndpoint
-import sttp.tapir.server.metrics.prometheus.PrometheusMetrics
 import io.prometheus.metrics.model.registry.PrometheusRegistry
+import sttp.tapir.server.metrics.prometheus.PrometheusMetrics
+import sttp.tapir.ztapir.ZServerEndpoint
+import zio.*
 
 val metricsRegistry: PrometheusRegistry = new PrometheusRegistry()
 

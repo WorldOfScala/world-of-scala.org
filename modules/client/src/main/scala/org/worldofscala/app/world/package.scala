@@ -1,8 +1,9 @@
 package org.worldofscala.app.world
 
-import scalajs.js
-import THREE.Sprite
 import THREE.Object3D
+import THREE.Sprite
+
+import scalajs.js
 
 class PinnerData(
   val id: Int,

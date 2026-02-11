@@ -1,7 +1,7 @@
 package org.worldofscala
 
-import sttp.tapir.*
 import org.worldofscala.domain.errors.HttpError
+import sttp.tapir.*
 
 trait BaseEndpoint {
   val baseEndpoint: Endpoint[Unit, Unit, Throwable, Unit, Any] = endpoint
@@ -11,6 +11,7 @@ trait BaseEndpoint {
 
   val baseSecuredEndpoint: Endpoint[String, Unit, Throwable, Unit, Any] =
     baseEndpoint
+      .tag("Admin")
       .securityIn(auth.bearer[String]())
 
 }

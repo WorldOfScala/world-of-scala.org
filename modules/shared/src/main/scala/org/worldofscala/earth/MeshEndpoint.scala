@@ -1,15 +1,12 @@
 package org.worldofscala.earth
 
-import sttp.tapir.*
-
 import org.worldofscala.BaseEndpoint
-
+import sttp.capabilities.zio.ZioStreams
+import sttp.tapir.*
 import sttp.tapir.json.zio.*
+import zio.stream.ZStream
 
 import java.io.InputStream
-
-import sttp.capabilities.zio.ZioStreams
-import zio.stream.ZStream
 
 object MeshEndpoint extends BaseEndpoint {
 
@@ -34,12 +31,12 @@ object MeshEndpoint extends BaseEndpoint {
     .out(jsonBody[Mesh.Id])
     .description("Create mesh")
 
-  val all: PublicEndpoint[Unit, Throwable, List[MeshEntry], Any] = baseEndpoint
+  val all: PublicEndpoint[Unit, Throwable, Seq[MeshEntry], Any] = baseEndpoint
     .tag("Admin")
     .name("meshes")
     .get
     .in("mesh")
-    .out(jsonBody[List[MeshEntry]])
+    .out(jsonBody[Seq[MeshEntry]])
     .description("Get all meshes")
 
   val get: Endpoint[Unit, Mesh.Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint

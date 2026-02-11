@@ -10,7 +10,6 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
 
   private val scalaMesh =
     NewMeshEntity(
-      None,
       "Scala",
       Array.emptyByteArray
     )
@@ -37,7 +36,6 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
       }
     ).provide(
       MeshRepositoryLive.layer,
-      Repository.quillLayer,
       dataSouurceLayer,
       Scope.default
     )

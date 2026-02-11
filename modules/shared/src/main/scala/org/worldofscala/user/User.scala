@@ -1,15 +1,15 @@
 package org.worldofscala.user
 
-import zio.json.JsonCodec
+import dev.cheleb.scalamigen.NoPanel
+import org.worldofscala.UUIDOpaque
 import sttp.tapir.Schema
-import java.time.ZonedDateTime
-import java.util.UUID
+import zio.json.JsonCodec
 import zio.prelude.*
 import zio.prelude.Debug.Repr
 import zio.prelude.magnolia.*
 
-import dev.cheleb.scalamigen.NoPanel
-import org.worldofscala.UUIDOpaque
+import java.time.OffsetDateTime
+import java.util.UUID
 
 @NoPanel
 case class NewUser(
@@ -57,7 +57,7 @@ case class User(
   lastname: String,
   email: String,
   hashedPassword: String,
-  creationDate: ZonedDateTime
+  creationDate: OffsetDateTime
 ) derives JsonCodec,
       Schema
 

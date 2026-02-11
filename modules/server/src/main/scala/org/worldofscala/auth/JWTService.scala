@@ -1,20 +1,17 @@
 package org.worldofscala.auth
 
-import zio.*
-
-import java.time.Duration
-import java.time.temporal.ChronoUnit
-import java.time.Clock as JavaClock
-
-import com.auth0.jwt.JWTVerifier.BaseVerification
 import com.auth0.jwt.*
+import com.auth0.jwt.JWTVerifier.BaseVerification
 import com.auth0.jwt.algorithms.Algorithm
 import org.worldofscala.config.Configs
 import org.worldofscala.config.JWTConfig
-
-import java.util.UUID
-
 import org.worldofscala.user.*
+import zio.*
+
+import java.time.Clock as JavaClock
+import java.time.Duration
+import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 trait JWTService {
   def createToken(user: User): Task[UserToken]

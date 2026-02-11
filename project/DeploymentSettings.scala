@@ -11,8 +11,6 @@ import java.nio.file.Files
 import org.scalajs.sbtplugin.ScalaJSPlugin.autoImport._
 import org.scalajs.sbtplugin._
 
-import play.twirl.sbt.SbtTwirl
-
 import sbt._
 import sbt.Keys._
 

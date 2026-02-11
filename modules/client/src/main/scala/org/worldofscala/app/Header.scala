@@ -1,21 +1,18 @@
 package org.worldofscala.app
 
-import zio.json.*
-
 import be.doeraene.webcomponents.ui5.*
 import be.doeraene.webcomponents.ui5.configkeys.*
 import com.raquo.laminar.api.L.*
-
 import dev.cheleb.scalamigen.*
-
 import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
+import org.worldofscala.auth.LoginPassword
+import org.worldofscala.auth.UserToken
+import org.worldofscala.user.Password
+import org.worldofscala.user.UserEndpoint
+import zio.json.*
 
 import scala.concurrent.duration.DurationInt
-import org.worldofscala.auth.LoginPassword
-import org.worldofscala.user.Password
-import org.worldofscala.auth.UserToken
-import org.worldofscala.user.UserEndpoint
 
 object Header:
   private val openPopoverBus = new EventBus[Boolean]
@@ -88,7 +85,7 @@ object Header:
         .amend(
           onClick.mapTo(false) --> openPopoverBus
         ),
-      _.item(a("Organisation", href := "organisation/new")),
+      _.item(a("Organisation", href := "/organisation/new")),
       _.item(_.icon := IconName.log, "Sign out").amend(
         onClick --> { _ =>
           session.clearUserState()

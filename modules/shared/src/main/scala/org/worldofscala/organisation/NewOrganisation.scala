@@ -1,19 +1,19 @@
 package org.worldofscala.organisation
 
-import java.util.UUID
-
+import dev.cheleb.scalamigen.NoPanel
+import org.worldofscala.UUIDOpaque
+import org.worldofscala.earth.Mesh
+import org.worldofscala.user.User
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 import zio.prelude.*
+import zio.prelude.Debug.Repr
 import zio.prelude.magnolia.*
 
-import dev.cheleb.scalamigen.NoPanel
-import zio.prelude.Debug.Repr
-import Math.{PI, cos, sin}
-import org.worldofscala.user.User
-import org.worldofscala.earth.Mesh
+import java.time.OffsetDateTime
+import java.util.UUID
 
-import org.worldofscala.UUIDOpaque
+import Math.{cos, sin, PI}
 
 @NoPanel
 case class NewOrganisation(
@@ -54,20 +54,19 @@ object LatLon:
 
 case class Organisation(
   id: Organisation.Id,
-  createdBy: User.Id,
   name: String,
   location: LatLon,
-  meshId: Option[Mesh.Id]
+  meshId: Option[Mesh.Id],
+  createdBy: User.Id,
+  creationDate: OffsetDateTime
 ) derives JsonCodec,
       Schema,
       Debug:
   def errorMessages: Seq[String] = Seq.empty
 
 object Organisation:
-  given Debug[UUID] with
-    def debug(value: UUID): Repr = Repr.String(value.toString)
-
+  given Debug[OffsetDateTime] with
+    def debug(value: OffsetDateTime): Repr = Repr.String(value.toString)
   opaque type Id <: UUID = UUID
-
   object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
-    inline def apply(uuid: UUID): Id = uuid
+    def apply(uuid: UUID): Id = uuid

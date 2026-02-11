@@ -1,13 +1,13 @@
 package org.worldofscala.user
 
+import com.augustnagro.magnum.*
+import com.augustnagro.magnum.ziomagnum.*
+import io.scalaland.chimney.Transformer
+import io.scalaland.chimney.dsl.*
+import org.worldofscala.repository.UUIDMapper
 import zio.*
 
-import io.getquill.*
-import io.getquill.jdbczio.*
-import io.getquill.jdbczio.Quill.Postgres
-import io.scalaland.chimney.dsl.*
-
-import org.worldofscala.repository.UUIDMapper
+import javax.sql.DataSource
 
 trait UserRepository {
   def create(user: NewUserEntity): Task[UserEntity]
@@ -17,41 +17,62 @@ trait UserRepository {
   def delete(id: User.Id): Task[UserEntity]
 }
 
-object UserRepository extends UUIDMapper[User.Id](identity, User.Id.apply)
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("users")
+case class NewUserEntity(
+  firstname: String,
+  lastname: String,
+  email: String,
+  hashedPassword: String,
+  creationDate: java.time.OffsetDateTime
+) derives DbCodec
 
-class UserRepositoryLive private (quill: Quill.Postgres[SnakeCase]) extends UserRepository {
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("users")
+case class UserEntity(
+  @Id id: User.Id,
+  firstname: String,
+  lastname: String,
+  email: String,
+  hashedPassword: String,
+  creationDate: java.time.OffsetDateTime
+) derives DbCodec
 
-  import quill.*
+object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
+  given Transformer[UserEntity, User] = Transformer.derive
 
-  inline given SchemaMeta[NewUserEntity] = schemaMeta[NewUserEntity]("users")
-  inline given InsertMeta[NewUserEntity] = insertMeta[NewUserEntity](_.id)
-  inline given SchemaMeta[UserEntity]    = schemaMeta[UserEntity]("users")
-  inline given UpdateMeta[UserEntity]    = updateMeta[UserEntity](_.id, _.creationDate)
+private class UserRepositoryLive private (using DataSource) extends UserRepository {
 
-  import UserRepository.given
+  import UserEntity.given
+
+  val repo = Repo[NewUserEntity, UserEntity, User.Id]
 
   override def create(user: NewUserEntity): Task[UserEntity] =
-    run(query[NewUserEntity].insertValue(lift(user)).returning(r => r))
-      .map(r => r.intoPartial[UserEntity].transform.asOption)
-      .someOrFail(new RuntimeException(""))
+    repo.zInsertReturning(user)
+
   override def getById(id: User.Id): Task[Option[UserEntity]] =
-    run(query[UserEntity].filter(_.id == lift(id))).map(_.headOption)
+    repo.zFindById(id)
+
   override def findByEmail(email: String): Task[Option[UserEntity]] =
-    run(query[UserEntity].filter(_.email == lift(email))).map(_.headOption)
+    val uspec = Spec[UserEntity]
+      .where(sql"email = $email")
+    repo.zFindAll(uspec).map(_.headOption)
 
   override def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity] =
-    for {
-      userEntity <- getById(id).someOrFail(new RuntimeException(s"User $id not found"))
-      updated <-
-        run(
-          query[UserEntity].filter(_.id == lift(userEntity.id)).updateValue(lift(op(userEntity))).returning(r => r)
-        )
-    } yield updated
+    for
+      userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
+      updated     = op(userEntity)
+      _          <-
+        repo.zUpdate(updated)
+    yield updated
 
   override def delete(id: User.Id): Task[UserEntity] =
-    run(query[UserEntity].filter(_.id == lift(id)).delete.returning(r => r))
+    for
+      userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
+      _          <- repo.zDeleteById(id)
+    yield userEntity
 }
 
 object UserRepositoryLive {
-  def layer: RLayer[Postgres[SnakeCase], UserRepository] = ZLayer.derive[UserRepositoryLive]
+  def layer: URLayer[DataSource, UserRepository] = ZLayer.derive[UserRepositoryLive]
 }

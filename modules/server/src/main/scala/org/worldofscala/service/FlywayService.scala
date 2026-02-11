@@ -1,10 +1,9 @@
 package org.worldofscala.services
 
-import zio.*
 import org.flywaydb.core.Flyway
-
-import org.worldofscala.config.FlywayConfig
 import org.worldofscala.config.Configs
+import org.worldofscala.config.FlywayConfig
+import zio.*
 
 trait FlywayService {
   def runClean(): Task[Unit]

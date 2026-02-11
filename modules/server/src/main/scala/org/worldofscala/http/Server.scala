@@ -1,20 +1,17 @@
 package org.worldofscala.http
 
+import org.worldofscala.config.ServerConfig
+import org.worldofscala.observability.*
+import org.worldofscala.repository.*
+import sttp.tapir.*
+import sttp.tapir.files.*
+import sttp.tapir.server.interceptor.cors.CORSInterceptor
+import sttp.tapir.server.ziohttp.*
+import sttp.tapir.swagger.bundle.SwaggerInterpreter
 import zio.*
 import zio.http.*
 
-import sttp.tapir.*
-import sttp.tapir.files.*
-import sttp.tapir.server.ziohttp.*
-import sttp.tapir.swagger.bundle.SwaggerInterpreter
-import sttp.tapir.server.interceptor.cors.CORSInterceptor
-
-import org.worldofscala.observability.*
-import org.worldofscala.config.ServerConfig
-import io.getquill.jdbczio.Quill.Postgres
-
-import org.worldofscala.repository.Repository
-import io.getquill.SnakeCase
+import javax.sql.DataSource
 
 object Server {
 
@@ -31,7 +28,7 @@ object Server {
       )
       .options
 
-  private def build: ZIO[ServerConfig & Postgres[SnakeCase], Throwable, Unit] = for {
+  private def build: ZIO[ServerConfig & DataSource, Throwable, Unit] = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
     apiEndpoints <- HttpApi.endpoints
@@ -48,5 +45,5 @@ object Server {
   } yield ()
 
   def start: Task[Unit] = build
-    .provide(Repository.dataLayer, ServerConfig.layer)
+    .provide(ServerConfig.layer, datasourceLayer)
 }

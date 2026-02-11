@@ -1,52 +1,71 @@
 package org.worldofscala.organisation
 
-import io.getquill.jdbczio.Quill
+import com.augustnagro.magnum.*
+import com.augustnagro.magnum.ziomagnum.*
+import io.scalaland.chimney.Transformer
 import org.worldofscala.*
-import io.getquill.*
-import io.scalaland.chimney.dsl.*
-
+import org.worldofscala.earth.Mesh
+import org.worldofscala.earth.MeshEntity
+import org.worldofscala.repository.*
+import org.worldofscala.user.User
+import org.worldofscala.user.UserEntity
 import zio.*
 import zio.stream.ZStream
-import org.worldofscala.repository.PGpointSupport
 
-import org.worldofscala.user.UserRepository
-import org.worldofscala.earth.MeshRepository
-
-import org.worldofscala.repository.UUIDMapper
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import javax.sql.DataSource
 
 trait OrganisationRepository {
   def create(org: NewOrganisationEntity): Task[OrganisationEntity]
-  def listAll(): Task[List[OrganisationEntity]]
+  def listAll(): Task[Seq[OrganisationEntity]]
   def streamAll(): ZStream[Any, Throwable, OrganisationEntity]
 }
 
-object OrganisationRepository extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply)
+import UserEntity.given
+import MeshEntity.given
 
-class OrganisationRepositoryLive private (val quill: Quill.Postgres[SnakeCase])
-    extends OrganisationRepository
-    with PGpointSupport {
-  import quill.*
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("organisations")
+case class NewOrganisationEntity(
+  name: String,
+  meshId: Option[Mesh.Id],
+  location: LatLon,
+  createdBy: User.Id,
+  creationDate: java.time.OffsetDateTime
+) derives DbCodec
 
-  import OrganisationRepository.given
-  import MeshRepository.given
-  import UserRepository.given
+@Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
+@SqlName("organisations")
+case class OrganisationEntity(
+  @Id id: Organisation.Id,
+  name: String,
+  meshId: Option[Mesh.Id],
+  location: LatLon,
+  createdBy: User.Id,
+  creationDate: java.time.OffsetDateTime
+) derives DbCodec
+
+object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
+  given Transformer[OrganisationEntity, Organisation] = Transformer.derive
+
+class OrganisationRepositoryLive private (using DataSource) extends OrganisationRepository {
+
+  import OrganisationEntity.given
+
+  val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
+
   override def streamAll(): ZStream[Any, Throwable, OrganisationEntity] =
-    stream(query[OrganisationEntity])
-
-  inline given SchemaMeta[NewOrganisationEntity] = schemaMeta[NewOrganisationEntity]("organisations")
-  inline given InsertMeta[NewOrganisationEntity] = insertMeta[NewOrganisationEntity](_.id, _.creationDate)
-  inline given SchemaMeta[OrganisationEntity]    = schemaMeta[OrganisationEntity]("organisations")
-  inline given UpdateMeta[OrganisationEntity]    = updateMeta[OrganisationEntity](_.id, _.creationDate, _.createdBy)
+    sql"SELECT id, name, mesh_id, location, created_by, creation_date FROM organisations".zStream[OrganisationEntity]()
 
   override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
-    run(query[NewOrganisationEntity].insertValue(lift(orga)).returning(r => r))
-      .map(r => r.intoPartial[OrganisationEntity].transform.asOption)
-      .someOrFail(new RuntimeException(""))
+    repo.zInsertReturning(orga)
 
-  override def listAll(): Task[List[OrganisationEntity]] = run(query[OrganisationEntity])
+  override def listAll(): Task[Vector[OrganisationEntity]] =
+    repo.zFindAll
 }
 
 object OrganisationRepositoryLive {
-  def layer: URLayer[Quill.Postgres[SnakeCase], OrganisationRepository] =
+  def layer: URLayer[DataSource, OrganisationRepository] =
     ZLayer.derive[OrganisationRepositoryLive]
 }

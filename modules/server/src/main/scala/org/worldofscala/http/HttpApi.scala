@@ -1,19 +1,16 @@
 package org.worldofscala.http
 
-import zio.*
-
 import dev.cheleb.ziotapir.*
-
 import org.worldofscala.auth.*
 import org.worldofscala.earth.*
 import org.worldofscala.health.HealthController
 import org.worldofscala.organisation.*
 import org.worldofscala.user.*
-
-import sttp.tapir.server.ServerEndpoint
 import sttp.capabilities.zio.ZioStreams
-import io.getquill.jdbczio.Quill.Postgres
-import io.getquill.SnakeCase
+import sttp.tapir.server.ServerEndpoint
+import zio.*
+
+import javax.sql.DataSource
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 type Deps = UserService & JWTService & OrganisationService & MeshService
@@ -46,8 +43,8 @@ object HttpApi extends Routes {
    * This is critical, to not provide the Postgres layer too early, it would be
    * closed too early in the app lifecycle.
    */
-  def endpoints =
-    gatherAllRoutes.provideSome[Postgres[SnakeCase]](
+  def endpoints: ZIO[DataSource, Throwable, List[ServerEndpoint[ZioStreams, Task]]] =
+    gatherAllRoutes.provideSome[DataSource](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,
