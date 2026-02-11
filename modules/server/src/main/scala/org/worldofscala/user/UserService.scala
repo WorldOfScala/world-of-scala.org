@@ -8,8 +8,8 @@ import org.worldofscala.domain.errors.UserAlreadyExistsException
 import org.worldofscala.domain.errors.UserNotFoundException
 import zio.*
 
-import java.sql.SQLException
 import java.time.OffsetDateTime
+import com.augustnagro.magnum.SqlException
 
 trait UserService {
   def register(person: NewUser): Task[User]
@@ -34,9 +34,10 @@ class UserServiceLive private (
                     creationDate = OffsetDateTime.now()
                   )
                 )
-                .catchSome { case e: SQLException =>
-                  ZIO.logError(s"Error code: ${e.getSQLState} while creating user: ${e.getMessage}")
+                .catchSome { case e: SqlException =>
+                  ZIO.logError(s"Error while creating user: ${e.getMessage}")
                     *> ZIO.fail(UserAlreadyExistsException())
+
                 }
                 .mapInto[User]
 
