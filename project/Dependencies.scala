@@ -16,15 +16,15 @@ object Dependencies {
     val postgresql            = "42.7.9"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
-    val tapir                 = "1.13.6"
+    val tapir                 = "1.13.7"
     val threesjs              = "0.0.8"
     val zio                   = "2.1.24"
     val zioConfig             = "4.0.5"
-    val zioLaminarTapir       = "5.3.0"
+    val zioLaminarTapir       = "5.3.1"
     val zioLogging            = "2.5.1"
     val zioMagnum             = "2.0.0"
     val zioMock               = "1.0.0-RC12"
-    val zioPrelude            = "1.0.0-RC44"
+    val zioPrelude            = "1.0.0-RC46"
     val zioTestContainers     = "0.10.0"
   }
 
