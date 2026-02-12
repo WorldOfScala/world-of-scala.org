@@ -20,7 +20,7 @@ jobs:
       - uses: VirtusLab/scala-cli-setup@main
         with:
             jvm: "zulu:23.0.2"    
-
+      - uses: oven-sh/setup-bun@v2
       - name: Set up sbt
         uses: sbt/setup-sbt@v1
       - name: Setup Node
