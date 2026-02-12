@@ -12,9 +12,9 @@ def datasourceLayer: TaskLayer[DataSource] = ZLayer.scoped {
   ZIO.fromAutoCloseable {
     ZIO.attempt {
       val config = new HikariConfig()
-      config.setJdbcUrl(sys.env.getOrElse("DB_JDBC_URL", "jdbc:postgresql://localhost:5432/world-of-scala"))
-      config.setUsername(sys.env.getOrElse("DB_USER", "docker"))
-      config.setPassword(sys.env.getOrElse("DB_PASSWORD", "docker"))
+      config.setJdbcUrl(sys.env.getOrElse("DATABASE_JDBC_URL", "jdbc:postgresql://localhost:5432/world-of-scala"))
+      config.setUsername(sys.env.getOrElse("DATABASE_USER", "docker"))
+      config.setPassword(sys.env.getOrElse("DATABASE_PASSWORD", "docker"))
       config.setMaximumPoolSize(10)
       new HikariDataSource(config)
     }
