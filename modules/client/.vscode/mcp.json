@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "client-metals": {
+      "url": "http://localhost:51478/mcp",
+      "type": "http"
+    }
+  }
+}
