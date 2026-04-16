@@ -19,7 +19,7 @@ object Dependencies {
     val tapir                 = "1.13.15"
     val threesjs              = "0.0.8"
     val zio                   = "2.1.25"
-    val zioConfig             = "4.0.5"
+    val zioConfig             = "4.0.7"
     val zioLaminarTapir       = "5.3.2"
     val zioLogging            = "2.5.1"
     val zioMagnum             = "2.0.0"
