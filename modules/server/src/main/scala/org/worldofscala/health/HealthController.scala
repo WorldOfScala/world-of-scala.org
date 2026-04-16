@@ -4,8 +4,9 @@ import dev.cheleb.ziotapir.BaseController
 import org.worldofscala.http.endpoints.HealthEndpoint
 import sttp.tapir.server.ServerEndpoint
 import zio.*
+import sttp.capabilities.zio.ZioStreams
 
-class HealthController private extends BaseController with HealthEndpoint {
+class HealthController private extends BaseController[ZioStreams] with HealthEndpoint {
 
   val health = healthEndpoint
     .serverLogicSuccess[Task](_ => ZIO.succeed("OK"))

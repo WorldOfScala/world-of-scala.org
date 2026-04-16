@@ -11,7 +11,7 @@ import zio.json.*
 import zio.stream.ZStream
 
 class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
-    extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
+    extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {
 
   val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic: userId =>
     organisation =>
