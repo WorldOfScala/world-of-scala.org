@@ -7,7 +7,7 @@ object Dependencies {
     val chimney               = "1.8.2"
     val flywaydb              = "12.4.0"
     val frontroute            = "0.19.0"
-    val iron                  = "3.2.1"
+    val iron                  = "3.3.0"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "1.6.0"
     val logback               = "1.5.32"
