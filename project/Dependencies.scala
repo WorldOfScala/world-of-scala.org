@@ -12,7 +12,7 @@ object Dependencies {
     val laminarFormDerivation = "1.6.0"
     val logback               = "1.5.32"
     val mUnit                 = "1.2.1"
-    val osLib                 = "0.10.2"
+    val osLib                 = "0.11.8"
     val postgresql            = "42.7.10"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
