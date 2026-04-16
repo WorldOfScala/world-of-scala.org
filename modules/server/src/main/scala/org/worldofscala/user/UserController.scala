@@ -5,9 +5,10 @@ import org.worldofscala.auth.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 import zio.*
+import sttp.capabilities.zio.ZioStreams
 
 class UserController private (personService: UserService, jwtService: JWTService)
-    extends SecuredBaseController[String, UserID](jwtService.verifyToken) {
+    extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {
 
   private val create: ServerEndpoint[Any, Task] = UserEndpoint.create
     .zServerLogic:

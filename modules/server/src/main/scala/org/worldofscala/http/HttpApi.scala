@@ -15,9 +15,11 @@ import javax.sql.DataSource
 //https://tapir.softwaremill.com/en/latest/server/logic.html
 type Deps = UserService & JWTService & OrganisationService & MeshService
 
-object HttpApi extends Routes {
+object HttpApi extends Routes[Deps] {
 
-  private val makeControllers =
+  type STREAMS = ZioStreams
+
+  protected val makeControllers =
     for {
       _                      <- ZIO.debug("*******************\nGathering endpoints\n*****************")
       healthController       <- HealthController.makeZIO
@@ -26,25 +28,12 @@ object HttpApi extends Routes {
       meshController         <- MeshController.makeZIO
     } yield List(healthController, personController, organisationController, meshController)
 
-  private def endpointsZIO(ctrs: URIO[Deps, List[BaseController]]) =
-    ctrs.map(gatherRoutes(_.routes))
-
-  private def streamEndpointsZIO(ctrs: URIO[Deps, List[BaseController]]) =
-    ctrs.map(gatherRoutes(_.streamRoutes))
-
-  private def gatherAllRoutes: URIO[Deps, List[ServerEndpoint[ZioStreams, Task]]] =
-    for {
-      mem             <- makeControllers.memoize
-      endpoints       <- endpointsZIO(mem)
-      streamEndpoints <- streamEndpointsZIO(mem)
-    } yield endpoints ++ streamEndpoints
-
   /**
    * This is critical, to not provide the Postgres layer too early, it would be
    * closed too early in the app lifecycle.
    */
-  def endpoints: ZIO[DataSource, Throwable, List[ServerEndpoint[ZioStreams, Task]]] =
-    gatherAllRoutes.provideSome[DataSource](
+  def resolvedEndpoints: RIO[DataSource, List[ServerEndpoint[ZioStreams, Task]]] =
+    endpoints.provideSome[DataSource](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,

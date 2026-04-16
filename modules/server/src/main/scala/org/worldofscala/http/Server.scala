@@ -13,8 +13,17 @@ import zio.http.*
 
 import javax.sql.DataSource
 
+/**
+ * This is the main entry point for the HTTP server.
+ *
+ * It gathers all the endpoints from the controllers and starts the server.
+ */
 object Server {
 
+  /**
+   * This is a simple endpoint to serve static resources from the "public"
+   * folder in the classpath.
+   */
   private val staticEndpoints = staticResourcesGetServerEndpoint[Task](emptyInput)(
     this.getClass.getClassLoader,
     "public"
@@ -31,7 +40,7 @@ object Server {
   private def build: ZIO[ServerConfig & DataSource, Throwable, Unit] = for {
     serverConfig <- ZIO.service[ServerConfig]
     _            <- ZIO.logInfo(s"Starting server... http://localhost:${serverConfig.port}")
-    apiEndpoints <- HttpApi.endpoints
+    apiEndpoints <- HttpApi.resolvedEndpoints
 
     docEndpoints = SwaggerInterpreter()
                      .fromServerEndpoints(apiEndpoints, "World of scala", "1.0.0")
