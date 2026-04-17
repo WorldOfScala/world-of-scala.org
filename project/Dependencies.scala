@@ -4,7 +4,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
   val Versions = new {
-    val chimney               = "1.8.2"
+    val chimney               = "1.9.0"
     val flywaydb              = "12.4.0"
     val frontroute            = "0.19.0"
     val iron                  = "3.3.0"
