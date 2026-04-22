@@ -16,7 +16,7 @@ object Dependencies {
     val postgresql            = "42.7.10"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.17"
-    val tapir                 = "1.13.16"
+    val tapir                 = "1.13.17"
     val threesjs              = "0.0.8"
     val zio                   = "2.1.25"
     val zioConfig             = "4.0.7"
