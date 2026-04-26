@@ -1,6 +1,6 @@
 package org.worldofscala.user
 
-import dev.cheleb.ziotapir.SecuredBaseController
+import dev.cheleb.ziotapir.server.SecuredBaseController
 import org.worldofscala.auth.*
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*

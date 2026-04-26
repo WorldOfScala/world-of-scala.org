@@ -1,6 +1,6 @@
 package org.worldofscala.health
 
-import dev.cheleb.ziotapir.BaseController
+import dev.cheleb.ziotapir.server.BaseController
 import org.worldofscala.http.endpoints.HealthEndpoint
 import sttp.tapir.server.ServerEndpoint
 import zio.*

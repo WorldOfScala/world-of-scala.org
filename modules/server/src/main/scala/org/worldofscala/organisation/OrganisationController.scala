@@ -1,6 +1,6 @@
 package org.worldofscala.organisation
 
-import dev.cheleb.ziotapir.*
+import dev.cheleb.ziotapir.server.*
 import org.worldofscala.auth.*
 import org.worldofscala.user.UserID
 import sttp.capabilities.zio.ZioStreams
