@@ -1,6 +1,6 @@
 package org.worldofscala.http
 
-import dev.cheleb.ziotapir.*
+import dev.cheleb.ziotapir.server.*
 import org.worldofscala.auth.*
 import org.worldofscala.earth.*
 import org.worldofscala.health.HealthController

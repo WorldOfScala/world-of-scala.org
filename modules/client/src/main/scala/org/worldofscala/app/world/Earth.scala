@@ -4,7 +4,6 @@ import THREE.*
 import com.raquo.laminar.api.L.*
 import dev.cheleb.threesjs.*
 import dev.cheleb.ziotapir.*
-import dev.cheleb.ziotapir.BackendClientLive
 import dev.cheleb.ziotapir.laminar.*
 import dev.cheleb.zthreesjs.*
 import org.scalajs.dom.window
@@ -122,9 +121,9 @@ object Earth {
   ): ZIO[Any, Throwable, Map[MeshId, GLTFResult]] =
     val (meshId, meshUrl) = organisation.meshId match {
       case Some(id) =>
-        (id, BackendClientLive.url("api", "mesh", id.toString()))
+        (id, FetchBackendClientLive.url("api", "mesh", id.toString()))
       case None =>
-        (org.worldofscala.earth.Mesh.default, BackendClientLive.resourceUrl("res", "pinner.glb"))
+        (org.worldofscala.earth.Mesh.default, FetchBackendClientLive.resourceUrl("res", "pinner.glb"))
     }
 
     val meshIO = cache.get(meshId) match {

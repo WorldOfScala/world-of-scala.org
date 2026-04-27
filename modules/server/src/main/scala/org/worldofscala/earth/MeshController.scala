@@ -1,6 +1,6 @@
 package org.worldofscala.earth
 
-import dev.cheleb.ziotapir.SecuredBaseController
+import dev.cheleb.ziotapir.server.SecuredBaseController
 import org.worldofscala.auth.JWTService
 import org.worldofscala.user.UserID
 import sttp.capabilities.zio.ZioStreams
