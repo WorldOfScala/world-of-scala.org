@@ -14,7 +14,7 @@ import DeploymentSettings._
 
 val isCI = Try(sys.env.getOrElse("CI", "false").toBoolean).getOrElse(false)
 
-val scala3 = "3.8.3"
+val scala3 = "3.8.4"
 
 name := "World Of Scala"
 
