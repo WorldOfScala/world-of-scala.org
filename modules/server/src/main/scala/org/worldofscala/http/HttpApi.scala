@@ -11,15 +11,18 @@ import sttp.tapir.server.ServerEndpoint
 import zio.*
 
 import javax.sql.DataSource
+import zio.telemetry.opentelemetry.tracing.Tracing
+import com.augustnagro.magnum.ziomagnum.ZIOMagnumTracer
+import com.augustnagro.magnum.SqlLogger
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
-type Deps = UserService & JWTService & OrganisationService & MeshService
+type Deps = UserService & JWTService & OrganisationService & MeshService & Tracing
 
 object HttpApi extends Routes[Deps] {
 
   type STREAMS = ZioStreams
 
-  protected val makeControllers =
+  protected val makeControllers: ZIO[Deps, Nothing, List[BaseController[STREAMS]]] =
     for {
       _                      <- ZIO.debug("*******************\nGathering endpoints\n*****************")
       healthController       <- HealthController.makeZIO
@@ -32,8 +35,9 @@ object HttpApi extends Routes[Deps] {
    * This is critical, to not provide the Postgres layer too early, it would be
    * closed too early in the app lifecycle.
    */
-  def resolvedEndpoints: RIO[DataSource, List[ServerEndpoint[ZioStreams, Task]]] =
-    endpoints.provideSome[DataSource](
+  def resolvedEndpoints
+    : RIO[DataSource & ZIOMagnumTracer & SqlLogger & Tracing, List[ServerEndpoint[ZioStreams, Task]]] =
+    endpoints.provideSome[DataSource & ZIOMagnumTracer & SqlLogger & Tracing](
       // Service layers
       UserServiceLive.layer,
       OrganisationServiceLive.layer,

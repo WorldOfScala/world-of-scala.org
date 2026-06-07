@@ -22,7 +22,7 @@ object Dependencies {
     val zioConfig             = "4.0.7"
     val zioLogging            = "2.5.3"
     val zioLaminarTapir       = "8.1.0"
-    val zioMagnum             = "2.0.0"
+    val zioMagnum             = "3.0.0"
     val zioMock               = "1.0.0-RC12"
     val zioPrelude            = "1.0.0-RC47"
     val zioSchema             = "1.8.5"
@@ -43,14 +43,13 @@ object Dependencies {
   )
 
   private val loggingDependencies = Seq(
-    "dev.zio"       %% "zio-logging"       % Versions.zioLogging,
-    "dev.zio"       %% "zio-logging-slf4j" % Versions.zioLogging,
-    "ch.qos.logback" % "logback-classic"   % Versions.logback
+    "dev.zio" %% "zio-logging"               % Versions.zioLogging,
+    "dev.zio" %% "zio-logging-slf4j"         % Versions.zioLogging,
+    "dev.zio" %% "zio-logging-slf4j2-bridge" % Versions.zioLogging
   )
 
   private val magnumDependencies = Seq(
-    "dev.cheleb"      %% "zio-magnum" % Versions.zioMagnum,
-    "com.augustnagro" %% "magnumpg"   % "2.0.0-M2"
+    "dev.cheleb" %% "zio-magnum-opentelemetry" % Versions.zioMagnum
   )
 
   private val jwtDependencies = Seq(
@@ -61,6 +60,7 @@ object Dependencies {
     libraryDependencies ++= Seq(
       "io.scalaland"                %% "chimney"                  % Versions.chimney,
       "com.softwaremill.sttp.tapir" %% "tapir-zio"                % Versions.tapir,
+      "com.softwaremill.sttp.tapir" %% "tapir-zio-opentelemetry"  % Versions.tapir,
       "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server"    % Versions.tapir,
       "com.softwaremill.sttp.tapir" %% "tapir-prometheus-metrics" % Versions.tapir,
       "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle"  % Versions.tapir,
