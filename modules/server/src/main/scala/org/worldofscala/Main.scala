@@ -8,6 +8,7 @@ import sttp.tapir.server.ziopentelemetry.ZIOpenTelemetryAppDefault
 import zio.logging.slf4j.bridge.Slf4jBridge
 import zio.logging.LogFilter
 import io.opentelemetry.api.OpenTelemetry
+import kyo.*
 
 object HttpServer extends ZIOpenTelemetryAppDefault("World of Scala"):
 
@@ -22,11 +23,20 @@ object HttpServer extends ZIOpenTelemetryAppDefault("World of Scala"):
     logFilterConfig.toFilter
   )
 
+  val kyoWork: Unit < (Abort[Throwable] & Async) =
+    Async
+      .sleep(5.seconds)
+      .andThen(42)
+      .map(i => println(s"Kyo $i"))
+
   val program = for {
 
     given OpenTelemetry <- ZIO.service[OpenTelemetry]
 
     _ <- ZIO.logInfo("Starting World of Scala HTTP server...")
+
+    _ <- ZIOs.run(kyoWork).fork
+
     _ <- FlywayService.runMigrations
     _ <- Server.start(otel4zMetricsInterceptor())
   } yield ()

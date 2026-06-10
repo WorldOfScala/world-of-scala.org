@@ -8,6 +8,7 @@ object Dependencies {
     val flywaydb              = "12.8.1"
     val frontroute            = "0.19.0"
     val iron                  = "3.3.1"
+    val kyo                   = "1.0.0-RC2"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "1.7.0"
     val logback               = "1.5.34"
@@ -58,6 +59,9 @@ object Dependencies {
 
   val serverLibraryDependencies =
     libraryDependencies ++= Seq(
+      "io.getkyo"                   %% "kyo-prelude"              % Versions.kyo,
+      "io.getkyo"                   %% "kyo-scheduler-zio"        % Versions.kyo,
+      "io.getkyo"                   %% "kyo-zio"                  % Versions.kyo,
       "io.scalaland"                %% "chimney"                  % Versions.chimney,
       "com.softwaremill.sttp.tapir" %% "tapir-zio"                % Versions.tapir,
       "com.softwaremill.sttp.tapir" %% "tapir-zio-opentelemetry"  % Versions.tapir,
