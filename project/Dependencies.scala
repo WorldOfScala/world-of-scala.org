@@ -7,7 +7,7 @@ object Dependencies {
     val chimney               = "1.10.0"
     val flywaydb              = "12.8.1"
     val frontroute            = "0.19.0"
-    val iron                  = "3.3.0"
+    val iron                  = "3.3.1"
     val javaMail              = "1.6.2"
     val laminarFormDerivation = "1.7.0"
     val logback               = "1.5.34"
@@ -16,15 +16,16 @@ object Dependencies {
     val postgresql            = "42.7.11"
     val scopt                 = "4.1.0"
     val slf4j                 = "2.0.18"
-    val tapir                 = "1.13.19"
+    val tapir                 = "1.13.20"
     val threesjs              = "0.1.0"
     val zio                   = "2.1.26"
     val zioConfig             = "4.0.7"
     val zioLogging            = "2.5.3"
-    val zioLaminarTapir       = "8.0.0"
+    val zioLaminarTapir       = "8.1.0"
     val zioMagnum             = "2.0.0"
     val zioMock               = "1.0.0-RC12"
     val zioPrelude            = "1.0.0-RC47"
+    val zioSchema             = "1.8.5"
     val zioTestContainers     = "0.10.0"
   }
 
@@ -93,6 +94,7 @@ object Dependencies {
       "dev.cheleb"                  %%% "zio-tapir-shared"               % Versions.zioLaminarTapir,
       "dev.zio"                     %%% "zio-prelude"                    % Versions.zioPrelude,
       "dev.zio"                     %%% "zio-prelude-magnolia"           % Versions.zioPrelude,
+      "dev.zio"                     %%% "zio-schema-json"                % Versions.zioSchema,
       "io.github.iltotore"           %% "iron-zio-json"                  % Versions.iron
     )
 
