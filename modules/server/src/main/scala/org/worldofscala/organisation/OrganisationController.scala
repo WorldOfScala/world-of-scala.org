@@ -28,10 +28,9 @@ class OrganisationController private (
     organisationService.listAll() @@ span("listAll-organisations")
 
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic: _ =>
-    for stream <- organisationService
-                    .streamAll()
-                    .toJsonLinesStream
-    yield stream
+    organisationService
+      .streamAll()
+      .toJsonLinesStream
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, listAll)
