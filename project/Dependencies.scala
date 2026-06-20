@@ -4,29 +4,32 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 
 object Dependencies {
   val Versions = new {
-    val chimney               = "1.10.0"
-    val flywaydb              = "12.9.0"
-    val frontroute            = "0.19.0"
-    val iron                  = "3.3.1"
-    val javaMail              = "1.6.2"
-    val laminarFormDerivation = "1.8.0"
-    val logback               = "1.5.34"
-    val mUnit                 = "1.3.3"
-    val osLib                 = "0.11.8"
-    val postgresql            = "42.7.11"
-    val scopt                 = "4.1.0"
-    val slf4j                 = "2.0.18"
-    val tapir                 = "1.13.23"
-    val threesjs              = "0.1.0"
-    val zio                   = "2.1.26"
-    val zioConfig             = "4.0.7"
-    val zioLogging            = "2.5.3"
-    val zioLaminarTapir       = "8.1.0"
-    val zioMagnum             = "2.0.0"
-    val zioMock               = "1.0.0-RC12"
-    val zioPrelude            = "1.0.0-RC47"
-    val zioSchema             = "1.8.5"
-    val zioTestContainers     = "0.10.0"
+    val chimney                       = "1.10.0"
+    val flywaydb                      = "12.9.0"
+    val frontroute                    = "0.19.0"
+    val iron                          = "3.3.1"
+    val kyo                           = "1.0.0-RC2"
+    val javaMail                      = "1.6.2"
+    val laminarFormDerivation         = "1.8.0"
+    val logback                       = "1.5.34"
+    val mUnit                         = "1.3.3"
+    val osLib                         = "0.11.8"
+    val postgresql                    = "42.7.11"
+    val scopt                         = "4.1.0"
+    val slf4j                         = "2.0.18"
+    val tapir                         = "1.13.23"
+    val threesjs                      = "0.1.0"
+    val zio                           = "2.1.26"
+    val zioConfig                     = "4.0.7"
+    val zioLogging                    = "2.5.3"
+    val zioLaminarTapir               = "8.1.0"
+    val zioOpenTelemetryBootstrap     = "0.0.1"
+    val openTelemetryRuntimeTelemetry = "2.29.0-alpha"
+    val zioMagnum                     = "3.0.0"
+    val zioMock                       = "1.0.0-RC12"
+    val zioPrelude                    = "1.0.0-RC47"
+    val zioSchema                     = "1.8.5"
+    val zioTestContainers             = "0.10.0"
   }
 
   private val configDependencies = Seq(
@@ -43,14 +46,13 @@ object Dependencies {
   )
 
   private val loggingDependencies = Seq(
-    "dev.zio"       %% "zio-logging"       % Versions.zioLogging,
-    "dev.zio"       %% "zio-logging-slf4j" % Versions.zioLogging,
-    "ch.qos.logback" % "logback-classic"   % Versions.logback
+    "dev.zio" %% "zio-logging"               % Versions.zioLogging,
+    "dev.zio" %% "zio-logging-slf4j"         % Versions.zioLogging,
+    "dev.zio" %% "zio-logging-slf4j2-bridge" % Versions.zioLogging
   )
 
   private val magnumDependencies = Seq(
-    "dev.cheleb"      %% "zio-magnum" % Versions.zioMagnum,
-    "com.augustnagro" %% "magnumpg"   % "2.0.0-M2"
+    "dev.cheleb" %% "zio-magnum-opentelemetry" % Versions.zioMagnum
   )
 
   private val jwtDependencies = Seq(
@@ -59,18 +61,25 @@ object Dependencies {
 
   val serverLibraryDependencies =
     libraryDependencies ++= Seq(
-      "io.scalaland"                %% "chimney"                  % Versions.chimney,
-      "com.softwaremill.sttp.tapir" %% "tapir-zio"                % Versions.tapir,
-      "com.softwaremill.sttp.tapir" %% "tapir-zio-http-server"    % Versions.tapir,
-      "com.softwaremill.sttp.tapir" %% "tapir-prometheus-metrics" % Versions.tapir,
-      "com.softwaremill.sttp.tapir" %% "tapir-swagger-ui-bundle"  % Versions.tapir,
-      "dev.cheleb"                  %% "zio-tapir-server"         % Versions.zioLaminarTapir,
-      "com.softwaremill.sttp.tapir" %% "tapir-sttp-stub-server"   % Versions.tapir   % Test,
-      "dev.zio"                     %% "zio-test"                 % Versions.zio     % Test,
-      "dev.zio"                     %% "zio-test-junit"           % Versions.zio     % Test,
-      "dev.zio"                     %% "zio-test-sbt"             % Versions.zio     % Test,
-      "dev.zio"                     %% "zio-test-magnolia"        % Versions.zio     % Test,
-      "dev.zio"                     %% "zio-mock"                 % Versions.zioMock % Test
+      "io.getkyo"                       %% "kyo-prelude"                     % Versions.kyo,
+      "io.getkyo"                       %% "kyo-scheduler-zio"               % Versions.kyo,
+      "io.getkyo"                       %% "kyo-zio"                         % Versions.kyo,
+      "io.scalaland"                    %% "chimney"                         % Versions.chimney,
+      "com.softwaremill.sttp.tapir"     %% "tapir-zio"                       % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-zio-opentelemetry"         % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-opentelemetry-metrics"     % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-zio-http-server"           % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-prometheus-metrics"        % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-swagger-ui-bundle"         % Versions.tapir,
+      "dev.cheleb"                      %% "zio-tapir-server"                % Versions.zioLaminarTapir,
+      "dev.cheleb"                      %% "zio-opentelemetry-bootstrap"     % Versions.zioOpenTelemetryBootstrap,
+      "io.opentelemetry.instrumentation" % "opentelemetry-runtime-telemetry" % Versions.openTelemetryRuntimeTelemetry,
+      "com.softwaremill.sttp.tapir"     %% "tapir-sttp-stub-server"          % Versions.tapir   % Test,
+      "dev.zio"                         %% "zio-test"                        % Versions.zio     % Test,
+      "dev.zio"                         %% "zio-test-junit"                  % Versions.zio     % Test,
+      "dev.zio"                         %% "zio-test-sbt"                    % Versions.zio     % Test,
+      "dev.zio"                         %% "zio-test-magnolia"               % Versions.zio     % Test,
+      "dev.zio"                         %% "zio-mock"                        % Versions.zioMock % Test
     ) ++
       configDependencies ++
       databaseDependencies ++
