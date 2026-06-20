@@ -8,10 +8,16 @@ import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 import zio.*
 import zio.json.*
-import zio.stream.ZStream
 
-class OrganisationController private (organisationService: OrganisationService, jwtService: JWTService)
-    extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {
+import zio.telemetry.opentelemetry.tracing.Tracing
+
+class OrganisationController private (
+  organisationService: OrganisationService,
+  jwtService: JWTService,
+  tracing: Tracing
+) extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {
+
+  import tracing.aspects.*
 
   val create: ServerEndpoint[Any, Task] = OrganisationEndpoint.create.zServerAuthenticatedLogic: userId =>
     organisation =>
@@ -19,13 +25,12 @@ class OrganisationController private (organisationService: OrganisationService, 
         .create(organisation, userId.id)
 
   val listAll: ServerEndpoint[Any, Task] = OrganisationEndpoint.all.zServerLogic: _ =>
-    organisationService.listAll()
+    organisationService.listAll() @@ span("listAll-organisations")
 
   val streamAll: ZServerEndpoint[Any, ZioStreams] = OrganisationEndpoint.allStream.zServerLogic: _ =>
-    ZIO.succeed:
-      organisationService
-        .streamAll()
-        .toJsonLinesStream
+    organisationService
+      .streamAll()
+      .toJsonLinesStream
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, listAll)
@@ -35,10 +40,11 @@ class OrganisationController private (organisationService: OrganisationService, 
 }
 
 object OrganisationController {
-  def makeZIO: URIO[OrganisationService & JWTService, OrganisationController] =
+  def makeZIO: URIO[OrganisationService & JWTService & Tracing, OrganisationController] =
     for
       organisationService <- ZIO.service[OrganisationService]
       jwtService          <- ZIO.service[JWTService]
-    yield new OrganisationController(organisationService, jwtService)
+      tracing             <- ZIO.service[Tracing]
+    yield new OrganisationController(organisationService, jwtService, tracing)
 
 }

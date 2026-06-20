@@ -14,7 +14,7 @@ object Mesh:
 
   def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
-  def defaulEntry = MeshEntry(default, "Scala", None, 0L)
+  def defaulEntry = MeshEntry(default, "Pinner", None, 0L)
 
   opaque type Id <: UUID = UUID
 
