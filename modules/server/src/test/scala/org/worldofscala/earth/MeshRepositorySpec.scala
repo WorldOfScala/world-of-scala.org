@@ -6,6 +6,8 @@ import zio.test.*
 
 import org.worldofscala.earth.*
 
+import com.augustnagro.magnum.ziomagnum.Slf4jMagnumLogger
+
 object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes.sql") {
 
   private val scalaMesh =
@@ -35,6 +37,7 @@ object MeshRepositorySpec extends ZIOSpecDefault with RepositorySpec("sql/meshes
         program.map(meshEntities => assert(meshEntities.size)(equalTo(2)))
       }
     ).provide(
+      Slf4jMagnumLogger.live(),
       MeshRepositoryLive.layer,
       dataSouurceLayer,
       Scope.default

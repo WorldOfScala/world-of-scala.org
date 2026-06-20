@@ -8,16 +8,22 @@
 
 The project is structured as a multi-project sbt build, with clear separation between the server-side, client-side, and shared code. This modular design promotes code reuse and maintainability.
 
+## Credits
+
+This project was inspired by the Rock the JVM course [ZIO Rite of Passage](https://courses.rockthejvm.com/p/zio-rite-of-passage).
+
+
 ## Technology Stack
 
 The project leverages a range of modern libraries and frameworks from the Scala ecosystem:
 
 *   **Backend:**
-    *   **ZIO:** For asynchronous and concurrent programming.
-    *   **Tapir:** For defining type-safe, boilerplate-free HTTP endpoints.
-    *   **Quill:** For type-safe database queries.
-    *   **Flyway:** For managing database migrations.
-    *   **PostgreSQL:** As the primary database.
+     *   **ZIO:** For asynchronous and concurrent programming.
+     *   **Tapir:** For defining type-safe, boilerplate-free HTTP endpoints.
+     *   **ZIO Magnum:** For type-safe database queries (replaces ZIO Quill).
+     *   **OpenTelemetry:** For distributed tracing, structured logging, and metrics collection.
+     *   **Flyway:** For managing database migrations.
+     *   **PostgreSQL:** As the primary database.
 *   **Frontend:**
     *   **Scala.js:** For writing frontend code in Scala.
     *   **Laminar:** For building reactive user interfaces.
@@ -41,11 +47,12 @@ The project is divided into three main modules:
     *   **Error Handling:** A unified error handling mechanism that maps application-specific exceptions to HTTP error codes.
 
 *   **`server`:** This module contains the backend application logic. Key components include:
-    *   **Controllers:** Implement the logic for the API endpoints defined in the `shared` module.
-    *   **Services:** Contain the business logic for managing users, organizations, and meshes.
-    *   **Repositories:** Provide a type-safe interface for accessing the database using Quill.
-    *   **Authentication:** Implements JWT-based authentication.
-    *   **Database Migrations:** SQL scripts for managing the database schema with Flyway.
+     *   **Controllers:** Implement the logic for the API endpoints defined in the `shared` module.
+     *   **Services:** Contain the business logic for managing users, organizations, and meshes.
+     *   **Repositories:** Provide a type-safe interface for accessing the database using ZIO Magnum.
+     *   **OpenTelemetry Integration:** Implements distributed tracing, structured logging, and metrics collection.
+     *   **Authentication:** Implements JWT-based authentication.
+     *   **Database Migrations:** SQL scripts for managing the database schema with Flyway.
 
 *   **`client`:** This module contains the frontend application logic, written in Scala.js. Key components include:
     *   **UI Components:** Built with Laminar to create a reactive and modular user interface.
@@ -78,8 +85,6 @@ The `docker-compose-all.yml` file defines two services:
 
 This setup makes it easy to run the application in a development or production environment with minimal configuration.
 
-I have analyzed the project and provided a comprehensive explanation. I am now ready to switch to another mode to implement any changes you might have in mind.
-
 ### ArgoCD
 
 The project can also be deployed in a Kubernetes environment using ArgoCD for continuous deployment. The `k8s` directory contains the necessary Kubernetes manifests and ArgoCD application definitions to deploy the application and manage its lifecycle.
@@ -92,7 +97,7 @@ The project can also be deployed in a Kubernetes environment using ArgoCD for co
 * Node.js
 * Docker running
 
-Decent vesions of JDK, sbt and Node.js are required.
+Decent versions of JDK, sbt and Node.js are required.
 
 ## Getting started
 
@@ -114,6 +119,16 @@ Development is done in two parts: the server and the client.
 
   * The client is built using the `fastLinkJS` command.
   * Vite is used to serve the client in development mode, with hot reloading.
+
+### Observability
+
+OpenTelemetry is used to collect metrics, traces and logs.
+
+
+Details here [Observability](./docs/observability.md).
+
+
+
 
 ### VS Code
 
@@ -150,3 +165,4 @@ To build the project for production, run the following command:
 ```
 
 Details here [Production](./docs/production.md).
+

@@ -9,16 +9,16 @@ import zio.stream.ZStream
 trait OrganisationService {
   def create(organisation: NewOrganisation, userUUID: User.Id): Task[Organisation]
   def listAll(): Task[Seq[Organisation]]
-  def streamAll(): ZStream[Any, Throwable, Organisation]
+  def streamAll(): UIO[ZStream[Any, Throwable, Organisation]]
 
 }
 
 case class OrganisationServiceLive(organisationRepository: OrganisationRepository) extends OrganisationService {
 
-  override def streamAll(): ZStream[Any, Throwable, Organisation] =
+  override def streamAll(): UIO[ZStream[Any, Throwable, Organisation]] =
     organisationRepository
       .streamAll()
-      .mapInto[Organisation]
+      .map(_.mapInto[Organisation])
 
   override def listAll(): Task[Seq[Organisation]] = organisationRepository
     .listAll()

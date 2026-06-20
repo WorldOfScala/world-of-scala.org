@@ -41,7 +41,7 @@ case class UserEntity(
 object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
   given Transformer[UserEntity, User] = Transformer.derive
 
-private class UserRepositoryLive private (using DataSource) extends UserRepository {
+private class UserRepositoryLive private (using DataSource, SqlLogger) extends UserRepository {
 
   import UserEntity.given
 
@@ -74,5 +74,5 @@ private class UserRepositoryLive private (using DataSource) extends UserReposito
 }
 
 object UserRepositoryLive {
-  def layer: URLayer[DataSource, UserRepository] = ZLayer.derive[UserRepositoryLive]
+  def layer: URLayer[DataSource & ZIOMagnumTracer & SqlLogger, UserRepository] = ZLayer.derive[UserRepositoryLive]
 }
