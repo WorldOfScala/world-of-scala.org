@@ -7,6 +7,10 @@
 "World of Scala" is a full-stack web application built entirely in Scala. It showcases a modern, type-safe technology stack and is designed to be a social platform for Scala developers. The application allows users to create accounts, form organizations, and contribute 3D models (meshes) that are displayed on a 3D globe.
 
 The project is structured as a multi-project sbt build, with clear separation between the server-side, client-side, and shared code. This modular design promotes code reuse and maintainability.
+## Credits
+
+This project was inspired by the Rock the JVM course [ZIO Rite of Passage](https://courses.rockthejvm.com/p/zio-rite-of-passage).
+
 
 ## Technology Stack
 
@@ -150,3 +154,4 @@ To build the project for production, run the following command:
 ```
 
 Details here [Production](./docs/production.md).
+
