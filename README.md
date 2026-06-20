@@ -8,6 +8,11 @@
 
 The project is structured as a multi-project sbt build, with clear separation between the server-side, client-side, and shared code. This modular design promotes code reuse and maintainability.
 
+## Credits
+
+This project was inspired by the Rock the JVM course [ZIO Rite of Passage](https://courses.rockthejvm.com/p/zio-rite-of-passage).
+
+
 ## Technology Stack
 
 The project leverages a range of modern libraries and frameworks from the Scala ecosystem:
@@ -115,6 +120,16 @@ Development is done in two parts: the server and the client.
   * The client is built using the `fastLinkJS` command.
   * Vite is used to serve the client in development mode, with hot reloading.
 
+### Observability
+
+OpenTelemetry is used to collect metrics, traces and logs.
+
+
+Details here [Observability](./docs/observability.md).
+
+
+
+
 ### VS Code
 
 VS Code is the recommended IDE for this project. The project is configured to work with Visual Studio Code.
@@ -150,3 +165,4 @@ To build the project for production, run the following command:
 ```
 
 Details here [Production](./docs/production.md).
+
