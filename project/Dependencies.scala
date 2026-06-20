@@ -5,7 +5,7 @@ import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport._
 object Dependencies {
   val Versions = new {
     val chimney                       = "1.10.0"
-    val flywaydb                      = "12.8.1"
+    val flywaydb                      = "12.9.0"
     val frontroute                    = "0.19.0"
     val iron                          = "3.3.1"
     val kyo                           = "1.0.0-RC2"
@@ -23,7 +23,7 @@ object Dependencies {
     val zioConfig                     = "4.0.7"
     val zioLogging                    = "2.5.3"
     val zioLaminarTapir               = "8.1.0"
-    val zioOpenTelemetryBootstrap     = "0.0.1-local"
+    val zioOpenTelemetryBootstrap     = "0.0.1"
     val openTelemetryRuntimeTelemetry = "2.29.0-alpha"
     val zioMagnum                     = "3.0.0"
     val zioMock                       = "1.0.0-RC12"
