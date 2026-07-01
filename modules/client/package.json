@@ -16,7 +16,7 @@
     "@ui5/webcomponents-fiori": "2.23.2",
     "@ui5/webcomponents-icons": "2.23.2",
     "@ui5/webcomponents-compat": "2.23.2",
-    "three": "0.185.0"
+    "three": "0.185.1"
   },
   "devDependencies": {
     "@scala-js/vite-plugin-scalajs": "^1.1.0",
