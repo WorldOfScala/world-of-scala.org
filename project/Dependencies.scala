@@ -14,7 +14,7 @@ object Dependencies {
     val logback                       = "1.5.34"
     val mUnit                         = "1.3.3"
     val osLib                         = "0.11.8"
-    val postgresql                    = "42.7.12"
+    val postgresql                    = "42.7.13"
     val scopt                         = "4.1.0"
     val slf4j                         = "2.0.18"
     val tapir                         = "1.13.25"
