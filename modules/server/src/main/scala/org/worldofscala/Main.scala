@@ -36,7 +36,7 @@ object HttpServer extends ZIOpenTelemetryAppDefault("World of Scala"):
 
     given OpenTelemetry <- ZIO.service[OpenTelemetry]
 
-    _ = runtimeTelemetry
+    _ <- runtimeTelemetryEmitter()
 
     _ <- ZIO.logInfo("Starting World of Scala HTTP server...")
 
@@ -49,8 +49,8 @@ object HttpServer extends ZIOpenTelemetryAppDefault("World of Scala"):
   override def run =
     program
 
-  def runtimeTelemetry(using otel: OpenTelemetry): RuntimeTelemetry =
-    RuntimeTelemetry.builder(otel).build()
+  private def runtimeTelemetryEmitter()(using otel: OpenTelemetry) =
+    ZIO.attempt(RuntimeTelemetry.builder(otel).build()).withFinalizerAuto
 
   def otel4zMetricsInterceptor(
     instrumentationScopeName: String = "tapir"
