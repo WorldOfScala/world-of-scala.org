@@ -10,7 +10,7 @@ object Dependencies {
     val iron                          = "3.3.2"
     val kyo                           = "1.0.0-RC5"
     val javaMail                      = "1.6.2"
-    val laminarFormDerivation         = "1.8.2"
+    val laminarFormDerivation         = "1.8.3"
     val logback                       = "1.5.34"
     val mUnit                         = "1.3.3"
     val osLib                         = "0.11.8"
