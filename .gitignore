@@ -1,6 +1,7 @@
 # Managed by sbt-fullstack-js
 /scripts-managed/
-
+# SkillsJars
+.agents/
 target/
 node_modules/
 package-lock.json

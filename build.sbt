@@ -18,6 +18,10 @@ val scala3 = "3.8.4"
 
 name := "World Of Scala"
 
+libraryDependencies += "dev.cheleb" % "threesjs_sjs1_3" % Versions.threesjs % Skills
+
+skillsJarsOutputDir := Some(file(".agents/skills"))
+
 inThisBuild(
   List(
     scalaVersion                            := scala3,
