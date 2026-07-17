@@ -26,7 +26,7 @@ object Dependencies {
     val zioLaminarTapir               = "8.1.2"
     val zioOpenTelemetryBootstrap     = "0.0.2"
     val openTelemetryRuntimeTelemetry = "2.29.0-alpha"
-    val zioMagnum                     = "3.0.0"
+    val zioMagnum                     = "3.0.1"
     val zioMock                       = "1.0.0-RC12"
     val zioPrelude                    = "1.0.0-RC47"
     val zioSchema                     = "1.8.5"
