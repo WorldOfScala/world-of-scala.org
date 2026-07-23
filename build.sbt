@@ -22,6 +22,10 @@ libraryDependencies += "dev.cheleb" % "threesjs_sjs1_3" % Versions.threesjs % Sk
 
 skillsJarsOutputDir := Some(file(".agents/skills"))
 
+lazy val startupTransition: State => State = { s: State =>
+  "extractSkillsJars" :: s
+}
+
 inThisBuild(
   List(
     scalaVersion                            := scala3,
@@ -61,7 +65,13 @@ lazy val root = project
   )
   .disablePlugins(RevolverPlugin)
   .settings(
-    publish / skip := true
+    publish / skip  := true,
+    Global / onLoad := {
+      val old = (Global / onLoad).value
+      // compose the new transition on top of the existing one
+      // in case your plugins are using this hook.
+      startupTransition compose old
+    }
   )
 
 //
