@@ -13,3 +13,12 @@ trait UUIDOpaque[ID <: UUID](json: JsonCodec[ID], schema: Schema[ID]):
 
   given Debug[ID] with
     def debug(value: ID): Repr = Repr.String(value.toString)
+
+trait UUIDOpaque2[ID <: UUID](f: UUID => ID, schema: Schema[ID]):
+  given JsonCodec[ID] = JsonCodec.uuid.transform(
+    uuid => f(uuid),
+    id => id
+  )
+  given Schema[ID] = schema
+  given Debug[ID] with
+    def debug(value: ID): Repr = Repr.String(value.toString)

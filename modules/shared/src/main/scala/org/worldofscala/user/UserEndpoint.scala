@@ -1,6 +1,7 @@
 package org.worldofscala.user
 
 import org.worldofscala.BaseEndpoint
+
 import org.worldofscala.auth.*
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
@@ -8,6 +9,8 @@ import sttp.tapir.json.zio.*
 import zio.*
 
 object UserEndpoint extends BaseEndpoint:
+
+  import UserView.given
 
   val create: PublicEndpoint[NewUser, Throwable, UserView, Any] = baseEndpoint
     .tag("person")

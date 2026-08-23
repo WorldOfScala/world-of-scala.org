@@ -2,12 +2,15 @@ package org.worldofscala.auth
 
 import dev.cheleb.ziojwt.WithToken
 
-import org.worldofscala.user.given
-import zio.json.JsonCodec
+import zio.json.*
+import org.worldofscala.domain.user.User
 
 final case class UserToken(
-  id: org.worldofscala.domain.user.User.Id,
+  id: User.Id,
   email: String,
   token: String,
   expiration: Option[Long]
 ) extends WithToken derives JsonCodec
+
+object UserToken:
+  import org.worldofscala.user.UserView.given

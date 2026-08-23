@@ -12,6 +12,7 @@ import java.time.OffsetDateTime
 import sttp.tapir.generic.auto.*
 import sttp.tapir.SchemaType.SString
 import org.worldofscala.domain.user.User
+import org.worldofscala.UUIDOpaque
 
 @NoPanel
 case class NewUser(
@@ -63,11 +64,11 @@ case class UserView(
 ) derives JsonCodec,
       Schema
 
-given JsonCodec[User.Id] = JsonCodec.uuid.transform(
-  uuid => User.Id(uuid),
-  id => id
-)
-given Schema[User.Id] =
-  Schema(SString[User.Id]()).format("uuid")
-
-case class UserID(id: org.worldofscala.domain.user.User.Id, email: String) derives JsonCodec, Schema
+object UserView:
+  given JsonCodec[User.Id] = JsonCodec.uuid.transform(
+    uuid => User.Id(uuid),
+    id => id
+  )
+  given Schema[User.Id] =
+    Schema(SString[User.Id]()).format("uuid")
+  case class UserID(id: User.Id, email: String) derives JsonCodec, Schema
