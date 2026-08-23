@@ -8,7 +8,7 @@ import org.worldofscala.repository.UUIDMapper
 import zio.*
 
 import javax.sql.DataSource
-import org.worldofscala.user.User
+import org.worldofscala.user.UserView
 
 trait UserRepository {
   def create(user: NewUserEntity): Task[UserEntity]
@@ -41,7 +41,7 @@ case class UserEntity(
 
 object UserEntity
     extends UUIDMapper[org.worldofscala.domain.user.User.Id](identity, org.worldofscala.domain.user.User.Id.apply):
-  given Transformer[UserEntity, User] = Transformer.derive
+  given Transformer[UserEntity, UserView] = Transformer.derive
 
 private class UserRepositoryLive private (using DataSource, SqlLogger) extends UserRepository {
 

@@ -9,7 +9,7 @@ import zio.*
 
 object UserEndpoint extends BaseEndpoint:
 
-  val create: PublicEndpoint[NewUser, Throwable, User, Any] = baseEndpoint
+  val create: PublicEndpoint[NewUser, Throwable, UserView, Any] = baseEndpoint
     .tag("person")
     .name("person")
     .post
@@ -27,7 +27,7 @@ object UserEndpoint extends BaseEndpoint:
           )
         )
     )
-    .out(jsonBody[User])
+    .out(jsonBody[UserView])
     .description("Create person")
 
   val login: PublicEndpoint[LoginPassword, Throwable, UserToken, Any] = baseEndpoint
@@ -41,10 +41,10 @@ object UserEndpoint extends BaseEndpoint:
     .out(jsonBody[UserToken])
     .description("Login")
 
-  val profile: Endpoint[String, Unit, Throwable, User, Any] = baseSecuredEndpoint
+  val profile: Endpoint[String, Unit, Throwable, UserView, Any] = baseSecuredEndpoint
     .tag("person")
     .name("profile")
     .get
     .in("profile")
-    .out(jsonBody[User])
+    .out(jsonBody[UserView])
     .description("Get profile")

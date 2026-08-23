@@ -22,7 +22,7 @@ object SignupPage:
     val personVar = Var(
       NewUser("John", "Does", "john.does@foo.bar", Password("notsecured"), Password("notsecured"))
     )
-    val userBus  = EventBus[User]()
+    val userBus  = EventBus[UserView]()
     val errorBus = EventBus[Throwable]()
 
     val debugVar = Var(false)
@@ -60,7 +60,7 @@ object SignupPage:
       renderToast(userBus, errorBus)
     )
 
-  def renderUser(user: User) =
+  def renderUser(user: UserView) =
     div(
       h2("User"),
       div(s"Id: ${user.id}"),
@@ -89,7 +89,7 @@ object SignupPage:
       )
     )
 
-  def renderToast(userBus: EventBus[User], errorBus: EventBus[Throwable]) =
+  def renderToast(userBus: EventBus[UserView], errorBus: EventBus[Throwable]) =
     Seq(
       Toast(
         cls := "srf-valid",

@@ -21,7 +21,7 @@ class UserController private (personService: UserService, jwtService: JWTService
           newUser.email,
           newUser.password
         )
-        .mapInto[User]
+        .mapInto[UserView]
 
   private val login: ServerEndpoint[Any, Task] = UserEndpoint.login.zServerLogic: lp =>
     for
@@ -33,7 +33,7 @@ class UserController private (personService: UserService, jwtService: JWTService
     _ =>
       personService
         .getProfile(userId)
-        .mapInto[User]
+        .mapInto[UserView]
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, login, profile)
