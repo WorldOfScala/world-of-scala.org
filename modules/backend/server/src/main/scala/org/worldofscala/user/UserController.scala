@@ -6,6 +6,7 @@ import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 import zio.*
 import sttp.capabilities.zio.ZioStreams
+import org.worldofscala.user.UserID
 
 class UserController private (personService: UserService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {

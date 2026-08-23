@@ -58,7 +58,7 @@ inThisBuild(
 lazy val root = project
   .in(file("."))
   .aggregate(
-    server,
+    backend,
     sharedJs,
     sharedJvm,
     client
@@ -73,13 +73,22 @@ lazy val root = project
       startupTransition compose old
     }
   )
+// Backend projects
+lazy val domain = project
+  .in(file("modules/backend/domain"))
+  .settings(
+    domainLibraryDependencies
+  )
 
+lazy val persistenceMagnum = project
+  .in(file("modules/backend/persistence/magnum"))
+  .dependsOn(domain)
 //
 // Server project
 // It depends on sharedJvm project, a project that contains shared code between server and client
 //
 lazy val server = project
-  .in(file("modules/server"))
+  .in(file("modules/backend/server"))
   .enablePlugins(FullstackPlugin, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
     fork := true,
@@ -87,7 +96,7 @@ lazy val server = project
     testingLibraryDependencies
   )
   .settings(dockerSettings: _*)
-  .dependsOn(sharedJvm)
+  .dependsOn(domain, persistenceMagnum, sharedJvm)
   .settings(
     publish / skip := true
   )
@@ -105,6 +114,18 @@ val usedScalacOptions = Seq(
   "-new-syntax",
   "-Wunused:all"
 )
+
+lazy val backend = project
+  .in(file("modules/backend"))
+  .aggregate(
+    domain,
+    server,
+    persistenceMagnum
+  )
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    publish / skip := true
+  )
 
 //
 // Client project

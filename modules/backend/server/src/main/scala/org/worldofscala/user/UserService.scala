@@ -10,6 +10,7 @@ import zio.*
 
 import java.time.OffsetDateTime
 import com.augustnagro.magnum.SqlException
+import org.worldofscala.user.{NewUser, User, UserID}
 
 trait UserService {
   def register(person: NewUser): Task[User]

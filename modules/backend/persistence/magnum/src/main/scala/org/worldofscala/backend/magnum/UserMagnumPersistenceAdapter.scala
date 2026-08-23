@@ -8,14 +8,7 @@ import org.worldofscala.repository.UUIDMapper
 import zio.*
 
 import javax.sql.DataSource
-
-trait UserRepository {
-  def create(user: NewUserEntity): Task[UserEntity]
-  def getById(id: User.Id): Task[Option[UserEntity]]
-  def findByEmail(email: String): Task[Option[UserEntity]]
-  def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity]
-  def delete(id: User.Id): Task[UserEntity]
-}
+import org.worldofscala.user.User
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("users")
