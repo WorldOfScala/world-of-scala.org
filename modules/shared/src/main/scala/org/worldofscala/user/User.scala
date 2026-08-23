@@ -27,7 +27,7 @@ case class NewUser(
 }
 
 object NewUser {
-  private val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".r
+  private val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z0-9]{2,}$".r
 
   def isValidEmail(email: String): Boolean =
     emailRegex.matches(email)
