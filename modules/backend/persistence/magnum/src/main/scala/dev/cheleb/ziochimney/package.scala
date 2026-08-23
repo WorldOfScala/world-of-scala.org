@@ -7,25 +7,27 @@ import zio.stream.ZStream
 import scala.annotation.targetName
 
 extension [R, A](zio: RIO[R, A])
-  def mapInto[B](using transformer: Transformer[A, B]): RIO[R, B] =
+  inline transparent def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): RIO[R, B] =
     zio.map:
       transformer.transform
 
 extension [R, A](zio: RIO[R, Option[A]])
   @targetName("mapIntoOption")
-  def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Option[B]] =
+  inline transparent def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): RIO[R, Option[B]] =
     zio.map:
       _.map:
         transformer.transform
 
 extension [R, A](zio: RIO[R, Seq[A]])
   @targetName("mapIntoList")
-  def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Seq[B]] =
+  inline transparent def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Seq[B]] =
     zio.map:
       _.map:
         transformer.transform
 
 extension [R, A](zstream: ZStream[Any, Throwable, A])
-  def mapInto[B](using transformer: Transformer[A, B]): ZStream[Any, Throwable, B] =
+  inline transparent def mapInto[B](using
+    transformer: Transformer[A, B]
+  ): ZStream[Any, Throwable, B] =
     zstream.map:
       transformer.transform

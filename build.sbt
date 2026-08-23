@@ -73,16 +73,27 @@ lazy val root = project
       startupTransition compose old
     }
   )
+lazy val domain = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/domain"))
+  .settings(
+    publish / skip := true
+  )
+
+lazy val domainJs  = domain.js
+lazy val domainJvm = domain.jvm
+
 // Backend projects
-lazy val domain = project
+lazy val domainBackend = project
   .in(file("modules/backend/domain"))
+  .dependsOn(domainJvm)
   .settings(
     domainLibraryDependencies
   )
 
 lazy val persistenceMagnum = project
   .in(file("modules/backend/persistence/magnum"))
-  .dependsOn(domain)
+  .dependsOn(domainBackend)
   .settings(
     persistenceMagnumLibraryDependencies
   )
@@ -99,7 +110,7 @@ lazy val server = project
     testingLibraryDependencies
   )
   .settings(dockerSettings: _*)
-  .dependsOn(domain, persistenceMagnum, sharedJvm)
+  .dependsOn(domainBackend, persistenceMagnum, sharedJvm)
   .settings(
     publish / skip := true
   )
@@ -121,7 +132,7 @@ val usedScalacOptions = Seq(
 lazy val backend = project
   .in(file("modules/backend"))
   .aggregate(
-    domain,
+    domainBackend,
     server,
     persistenceMagnum
   )
@@ -163,6 +174,7 @@ lazy val client = scalajsProject("client")
 //
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
+  .dependsOn(domain)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys    := Seq[BuildInfoKey](version, scalaVersion, sbtVersion),

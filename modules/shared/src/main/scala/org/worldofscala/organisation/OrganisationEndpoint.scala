@@ -8,6 +8,9 @@ import sttp.tapir.generic.auto.*
 import sttp.tapir.json.zio.*
 import zio.*
 import zio.stream.*
+
+import org.worldofscala.user.given
+
 object OrganisationEndpoint extends BaseEndpoint:
 
   val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint

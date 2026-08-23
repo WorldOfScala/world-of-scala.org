@@ -10,7 +10,7 @@ import org.worldofscala.*
 import org.worldofscala.earth.Mesh
 import org.worldofscala.earth.MeshEntity
 import org.worldofscala.repository.*
-import org.worldofscala.user.User
+import org.worldofscala.domain.user.User
 import org.worldofscala.user.UserEntity
 import zio.*
 import zio.stream.ZStream

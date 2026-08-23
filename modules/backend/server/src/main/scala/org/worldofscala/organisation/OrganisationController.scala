@@ -2,7 +2,7 @@ package org.worldofscala.organisation
 
 import dev.cheleb.ziotapir.server.*
 import org.worldofscala.auth.*
-import org.worldofscala.user.UserID
+import org.worldofscala.domain.user.UserID
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*

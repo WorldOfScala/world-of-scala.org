@@ -2,7 +2,7 @@ package org.worldofscala.earth
 
 import dev.cheleb.ziotapir.server.SecuredBaseController
 import org.worldofscala.auth.JWTService
-import org.worldofscala.user.UserID
+import org.worldofscala.domain.user.UserID
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.server.*
 import sttp.tapir.ztapir.*

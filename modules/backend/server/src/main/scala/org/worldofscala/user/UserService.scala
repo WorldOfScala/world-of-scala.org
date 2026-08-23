@@ -1,6 +1,5 @@
 package org.worldofscala.user
 
-import dev.cheleb.ziochimney.*
 import io.scalaland.chimney.dsl.*
 import org.worldofscala.auth.*
 import org.worldofscala.domain.errors.InvalidCredentialsException
@@ -10,28 +9,29 @@ import zio.*
 
 import java.time.OffsetDateTime
 import com.augustnagro.magnum.SqlException
-import org.worldofscala.user.{NewUser, User, UserID}
+import org.worldofscala.domain.user.{NewUser, User, UserID}
+import org.worldofscala.domain.user.ports.UserPersistencePort
 
 trait UserService {
-  def register(person: NewUser): Task[User]
+  def register(irstname: String, lastname: String, email: String, password: String): Task[User]
   def login(email: String, password: String): Task[User]
   def getProfile(userId: UserID): Task[User]
 }
 
 class UserServiceLive private (
-  userRepository: UserRepository
+  userRepository: UserPersistencePort
 ) extends UserService {
 
-  def register(person: NewUser): Task[User] =
+  def register(firstname: String, lastname: String, email: String, password: String): Task[User] =
     for {
-      _    <- ZIO.logDebug(s"Registering user: $person")
+      _    <- ZIO.logDebug(s"Registering user: $email")
       user <- userRepository
                 .create(
-                  NewUserEntity(
-                    firstname = person.firstname,
-                    lastname = person.lastname,
-                    email = person.email,
-                    hashedPassword = Hasher.generatedHash(person.password.toString),
+                  NewUser(
+                    firstname = firstname,
+                    lastname = lastname,
+                    email = email,
+                    hashedPassword = Hasher.generatedHash(password),
                     creationDate = OffsetDateTime.now()
                   )
                 )
@@ -40,7 +40,6 @@ class UserServiceLive private (
                     *> ZIO.fail(UserAlreadyExistsException())
 
                 }
-                .mapInto[User]
 
     } yield user
 
@@ -51,7 +50,6 @@ class UserServiceLive private (
         _.filter(user => Hasher.validateHash(password, user.hashedPassword))
       }
       .someOrFail(InvalidCredentialsException())
-      .mapInto[User]
 
   override def getProfile(userId: UserID): Task[User] =
     for
@@ -64,6 +62,6 @@ class UserServiceLive private (
 }
 
 object UserServiceLive {
-  val layer: RLayer[UserRepository, UserService] =
+  val layer: RLayer[UserPersistencePort, UserService] =
     ZLayer.derive[UserServiceLive]
 }

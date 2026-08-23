@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier.BaseVerification
 import com.auth0.jwt.algorithms.Algorithm
 import org.worldofscala.config.Configs
 import org.worldofscala.config.JWTConfig
-import org.worldofscala.user.*
+import org.worldofscala.domain.user.*
 import zio.*
 
 import java.time.Clock as JavaClock
@@ -53,7 +53,10 @@ class JWTServiceLive private (jwtConfig: JWTConfig, clock: JavaClock) extends JW
     for {
       decoded <- ZIO.attempt(verifier.verify(token))
       userID  <- ZIO.attempt(
-                  UserID(User.Id(UUID.fromString(decoded.getSubject())), decoded.getClaim(CLAIN_USER_NAME).asString())
+                  UserID(
+                    org.worldofscala.domain.user.User.Id(UUID.fromString(decoded.getSubject())),
+                    decoded.getClaim(CLAIN_USER_NAME).asString()
+                  )
                 )
     } yield userID
 }

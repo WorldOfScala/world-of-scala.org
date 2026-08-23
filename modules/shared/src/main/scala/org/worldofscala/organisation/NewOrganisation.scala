@@ -3,7 +3,8 @@ package org.worldofscala.organisation
 import dev.cheleb.scalamigen.NoPanel
 import org.worldofscala.UUIDOpaque
 import org.worldofscala.earth.Mesh
-import org.worldofscala.user.User
+
+import org.worldofscala.user.given
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 import zio.prelude.*
@@ -57,7 +58,7 @@ case class Organisation(
   name: String,
   location: LatLon,
   meshId: Option[Mesh.Id],
-  createdBy: User.Id,
+  createdBy: org.worldofscala.domain.user.User.Id,
   creationDate: OffsetDateTime
 ) derives JsonCodec,
       Schema,
@@ -67,6 +68,10 @@ case class Organisation(
 object Organisation:
   given Debug[OffsetDateTime] with
     def debug(value: OffsetDateTime): Repr = Repr.String(value.toString)
+
+  given Debug[org.worldofscala.domain.user.User.Id] with
+    def debug(value: org.worldofscala.domain.user.User.Id): Repr = Repr.String(value.toString)
+
   opaque type Id <: UUID = UUID
   object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
     def apply(uuid: UUID): Id = uuid

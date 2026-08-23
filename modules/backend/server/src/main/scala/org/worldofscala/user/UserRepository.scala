@@ -12,10 +12,10 @@ import org.worldofscala.user.User
 
 trait UserRepository {
   def create(user: NewUserEntity): Task[UserEntity]
-  def getById(id: User.Id): Task[Option[UserEntity]]
+  def getById(id: org.worldofscala.domain.user.User.Id): Task[Option[UserEntity]]
   def findByEmail(email: String): Task[Option[UserEntity]]
-  def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity]
-  def delete(id: User.Id): Task[UserEntity]
+  def update(id: org.worldofscala.domain.user.User.Id, op: UserEntity => UserEntity): Task[UserEntity]
+  def delete(id: org.worldofscala.domain.user.User.Id): Task[UserEntity]
 }
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
@@ -31,7 +31,7 @@ case class NewUserEntity(
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("users")
 case class UserEntity(
-  @Id id: User.Id,
+  @Id id: org.worldofscala.domain.user.User.Id,
   firstname: String,
   lastname: String,
   email: String,
@@ -39,19 +39,20 @@ case class UserEntity(
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
+object UserEntity
+    extends UUIDMapper[org.worldofscala.domain.user.User.Id](identity, org.worldofscala.domain.user.User.Id.apply):
   given Transformer[UserEntity, User] = Transformer.derive
 
 private class UserRepositoryLive private (using DataSource, SqlLogger) extends UserRepository {
 
   import UserEntity.given
 
-  val repo = Repo[NewUserEntity, UserEntity, User.Id]
+  val repo = Repo[NewUserEntity, UserEntity, org.worldofscala.domain.user.User.Id]
 
   override def create(user: NewUserEntity): Task[UserEntity] =
     repo.zInsertReturning(user)
 
-  override def getById(id: User.Id): Task[Option[UserEntity]] =
+  override def getById(id: org.worldofscala.domain.user.User.Id): Task[Option[UserEntity]] =
     repo.zFindById(id)
 
   override def findByEmail(email: String): Task[Option[UserEntity]] =
@@ -59,7 +60,7 @@ private class UserRepositoryLive private (using DataSource, SqlLogger) extends U
       .where(sql"email = $email")
     repo.zFindAll(uspec).map(_.headOption)
 
-  override def update(id: User.Id, op: UserEntity => UserEntity): Task[UserEntity] =
+  override def update(id: org.worldofscala.domain.user.User.Id, op: UserEntity => UserEntity): Task[UserEntity] =
     for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       updated     = op(userEntity)
@@ -67,7 +68,7 @@ private class UserRepositoryLive private (using DataSource, SqlLogger) extends U
         repo.zUpdate(updated)
     yield updated
 
-  override def delete(id: User.Id): Task[UserEntity] =
+  override def delete(id: org.worldofscala.domain.user.User.Id): Task[UserEntity] =
     for
       userEntity <- repo.zFindById(id).map(_.getOrElse(throw new RuntimeException(s"User $id not found")))
       _          <- repo.zDeleteById(id)

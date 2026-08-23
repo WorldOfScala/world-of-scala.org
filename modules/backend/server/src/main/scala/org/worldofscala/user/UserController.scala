@@ -6,14 +6,22 @@ import sttp.tapir.server.ServerEndpoint
 import sttp.tapir.ztapir.*
 import zio.*
 import sttp.capabilities.zio.ZioStreams
-import org.worldofscala.user.UserID
+import org.worldofscala.domain.user.UserID
+import dev.cheleb.ziochimney.*
 
 class UserController private (personService: UserService, jwtService: JWTService)
     extends SecuredBaseController[String, UserID, ZioStreams](jwtService.verifyToken) {
 
   private val create: ServerEndpoint[Any, Task] = UserEndpoint.create
-    .zServerLogic:
-      personService.register
+    .zServerLogic: newUser =>
+      personService
+        .register(
+          newUser.firstname,
+          newUser.lastname,
+          newUser.email,
+          newUser.password
+        )
+        .mapInto[User]
 
   private val login: ServerEndpoint[Any, Task] = UserEndpoint.login.zServerLogic: lp =>
     for
@@ -22,7 +30,10 @@ class UserController private (personService: UserService, jwtService: JWTService
     yield token
 
   private val profile: ServerEndpoint[Any, Task] = UserEndpoint.profile.zServerAuthenticatedLogic: userId =>
-    _ => personService.getProfile(userId)
+    _ =>
+      personService
+        .getProfile(userId)
+        .mapInto[User]
 
   override val routes: List[ServerEndpoint[Any, Task]] =
     List(create, login, profile)

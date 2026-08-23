@@ -1,7 +1,6 @@
 package org.worldofscala.user
 
 import dev.cheleb.scalamigen.NoPanel
-import org.worldofscala.UUIDOpaque
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 import zio.prelude.*
@@ -9,7 +8,9 @@ import zio.prelude.Debug.Repr
 import zio.prelude.magnolia.*
 
 import java.time.OffsetDateTime
-import java.util.UUID
+
+import sttp.tapir.generic.auto.*
+import sttp.tapir.SchemaType.SString
 
 @NoPanel
 case class NewUser(
@@ -52,7 +53,7 @@ object Password:
   def apply(password: String): Password = password
 
 case class User(
-  id: User.Id,
+  id: org.worldofscala.domain.user.User.Id,
   firstname: String,
   lastname: String,
   email: String,
@@ -61,10 +62,14 @@ case class User(
 ) derives JsonCodec,
       Schema
 
-object User:
+given JsonCodec[org.worldofscala.domain.user.User.Id] = JsonCodec.uuid.transform(
+  uuid => org.worldofscala.domain.user.User.Id(uuid),
+  id => id
+)
+given Schema[org.worldofscala.domain.user.User.Id] =
+  Schema(SString[org.worldofscala.domain.user.User.Id]()).format("uuid")
 
-  opaque type Id <: UUID = UUID
-  object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
-    def apply(uuid: UUID): Id = uuid
+// object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
+//   def apply(uuid: UUID): Id = uuid
 
-case class UserID(id: User.Id, email: String) derives JsonCodec, Schema
+case class UserID(id: org.worldofscala.domain.user.User.Id, email: String) derives JsonCodec, Schema
