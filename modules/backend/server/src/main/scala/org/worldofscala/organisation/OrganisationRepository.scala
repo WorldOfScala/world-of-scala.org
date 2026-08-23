@@ -7,7 +7,7 @@ import com.augustnagro.magnum.ziomagnum.*
 
 import io.scalaland.chimney.Transformer
 import org.worldofscala.*
-import org.worldofscala.earth.Mesh
+import org.worldofscala.earth.MeshView
 import org.worldofscala.earth.MeshEntity
 import org.worldofscala.repository.*
 import org.worldofscala.domain.user.User
@@ -32,8 +32,8 @@ import MeshEntity.given
 @SqlName("organisations")
 case class NewOrganisationEntity(
   name: String,
-  meshId: Option[Mesh.Id],
-  location: LatLon,
+  meshId: Option[MeshView.Id],
+  location: LatLonView,
   createdBy: User.Id,
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
@@ -41,22 +41,22 @@ case class NewOrganisationEntity(
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("organisations")
 case class OrganisationEntity(
-  @Id id: Organisation.Id,
+  @Id id: OrganisationView.Id,
   name: String,
-  meshId: Option[Mesh.Id],
-  location: LatLon,
+  meshId: Option[MeshView.Id],
+  location: LatLonView,
   createdBy: User.Id,
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
-  given Transformer[OrganisationEntity, Organisation] = Transformer.derive
+object OrganisationEntity extends UUIDMapper[OrganisationView.Id](identity, OrganisationView.Id.apply):
+  given Transformer[OrganisationEntity, OrganisationView] = Transformer.derive
 
 class OrganisationRepositoryLive private (using DataSource, ZIOMagnumTracer, SqlLogger) extends OrganisationRepository {
 
   import OrganisationEntity.given
 
-  val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
+  val repo = Repo[NewOrganisationEntity, OrganisationEntity, OrganisationView.Id]
 
   override def streamAll(): UIO[ZStream[Any, Throwable, OrganisationEntity]] =
     sql"SELECT id, name, mesh_id, location, created_by, creation_date FROM organisations"

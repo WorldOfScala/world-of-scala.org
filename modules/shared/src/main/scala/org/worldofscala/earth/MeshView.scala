@@ -7,12 +7,14 @@ import zio.json.JsonCodec
 
 import java.util.UUID
 
-final case class Mesh(id: Mesh.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
-final case class MeshEntry(id: Mesh.Id, label: String, thumbnail: Option[String], count: Long) derives JsonCodec, Schema
+final case class MeshView(id: MeshView.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
+final case class MeshEntry(id: MeshView.Id, label: String, thumbnail: Option[String], count: Long)
+    derives JsonCodec,
+      Schema
 
-object Mesh:
+object MeshView:
 
-  def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+  def default = MeshView.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
   def defaulEntry = MeshEntry(default, "Pinner", None, 0L)
 

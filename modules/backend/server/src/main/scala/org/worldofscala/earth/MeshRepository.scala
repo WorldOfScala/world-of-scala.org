@@ -9,10 +9,10 @@ import zio.*
 import javax.sql.DataSource
 
 trait MeshRepository:
-  def get(id: Mesh.Id): Task[Option[MeshEntity]]
+  def get(id: MeshView.Id): Task[Option[MeshEntity]]
   def saveMesh(mesh: NewMeshEntity): Task[MeshEntity]
 //   def deleteMesh(id: Mesh.Id): Unit
-  def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int]
+  def updateThumbnail(id: MeshView.Id, thumbnail: Option[String]): Task[Int]
   def listMeshes(): Task[Vector[MeshEntry]]
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
@@ -25,28 +25,28 @@ case class NewMeshEntity(
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("meshes")
 case class MeshEntity(
-  @Id id: Mesh.Id,
+  @Id id: MeshView.Id,
   label: String,
   blob: Array[Byte],
   thumbnail: Option[String]
 ) derives DbCodec
 
-object MeshEntity                                              extends UUIDMapper[Mesh.Id](identity, Mesh.Id.apply)
+object MeshEntity                                              extends UUIDMapper[MeshView.Id](identity, MeshView.Id.apply)
 class MeshRepositoryLive private (using DataSource, SqlLogger) extends MeshRepository:
 
   import MeshEntity.given
   transparent inline given TransformerConfiguration[?] =
     TransformerConfiguration.default.enableOptionDefaultsToNone
 
-  val repo = Repo[NewMeshEntity, MeshEntity, Mesh.Id]
+  val repo = Repo[NewMeshEntity, MeshEntity, MeshView.Id]
 
   override def saveMesh(mesh: NewMeshEntity): Task[MeshEntity] =
     repo.zInsertReturning(mesh)
 
-  override def updateThumbnail(id: Mesh.Id, thumbnail: Option[String]): Task[Int] =
+  override def updateThumbnail(id: MeshView.Id, thumbnail: Option[String]): Task[Int] =
     sql"UPDATE meshes SET thumbnail = $thumbnail WHERE id = $id".zUpdate
 
-  override def get(id: Mesh.Id): Task[Option[MeshEntity]] =
+  override def get(id: MeshView.Id): Task[Option[MeshEntity]] =
     repo.zFindById(id)
 
   private given DbCodec[MeshEntry] = DbCodec.derived[MeshEntry]

@@ -1,7 +1,7 @@
 package org.worldofscala.organisation
 
 import org.worldofscala.BaseEndpoint
-import org.worldofscala.earth.Mesh
+import org.worldofscala.earth.MeshView
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
@@ -13,31 +13,31 @@ import org.worldofscala.user.given
 
 object OrganisationEndpoint extends BaseEndpoint:
 
-  val create: Endpoint[String, NewOrganisation, Throwable, Organisation, Any] = baseSecuredEndpoint
+  val create: Endpoint[String, NewOrganisationWiew, Throwable, OrganisationView, Any] = baseSecuredEndpoint
     .tag("Organisation")
     .name("organisation")
     .post
     .in("organisation")
     .in(
-      jsonBody[NewOrganisation]
+      jsonBody[NewOrganisationWiew]
         .description("Organisation to insert")
         .example(
-          NewOrganisation(
+          NewOrganisationWiew(
             "EPFL",
-            LatLon(46.519653, 6.632273),
-            Mesh.default
+            LatLonView(46.519653, 6.632273),
+            MeshView.default
           )
         )
     )
-    .out(jsonBody[Organisation])
+    .out(jsonBody[OrganisationView])
     .description("Create organisation")
 
-  val all: PublicEndpoint[Unit, Throwable, Seq[Organisation], Any] = baseEndpoint
+  val all: PublicEndpoint[Unit, Throwable, Seq[OrganisationView], Any] = baseEndpoint
     .tag("Organisation")
     .name("organisation")
     .get
     .in("organisation")
-    .out(jsonBody[Seq[Organisation]])
+    .out(jsonBody[Seq[OrganisationView]])
     .description("Get all organisations")
 
   val allStream: Endpoint[Unit, Unit, Throwable, Stream[Throwable, Byte], ZioStreams] = baseEndpoint
@@ -45,5 +45,5 @@ object OrganisationEndpoint extends BaseEndpoint:
     .name("Organisations stream")
     .get
     .in("organisation" / "stream")
-    .out(streamBody(ZioStreams)(Schema.derived[Organisation], CodecFormat.TextEventStream()))
+    .out(streamBody(ZioStreams)(Schema.derived[OrganisationView], CodecFormat.TextEventStream()))
     .description("Get all organisations")

@@ -8,9 +8,9 @@ import dev.cheleb.ziotapir.laminar.*
 import dev.cheleb.zthreesjs.*
 import org.scalajs.dom.window
 import org.worldofscala.app.world.SceneHelper.*
-import org.worldofscala.earth.Mesh.Id as MeshId
-import org.worldofscala.organisation.LatLon
-import org.worldofscala.organisation.Organisation
+import org.worldofscala.earth.MeshView.Id as MeshId
+import org.worldofscala.organisation.LatLonView
+import org.worldofscala.organisation.OrganisationView
 import org.worldofscala.organisation.OrganisationEndpoint
 import zio.*
 
@@ -73,13 +73,13 @@ object Earth {
     loader.load(
       "/res/scala.glb",
       (obj) => {
-        addPinner(globeGroup, obj, LatLon(46.5188, 6.5593)) // Lauzane
+        addPinner(globeGroup, obj, LatLonView(46.5188, 6.5593)) // Lauzane
       }
     )
 
     OrganisationEndpoint
       .allStream(())
-      .jsonlFoldZIO[Map[MeshId, GLTFResult], Organisation](Map.empty[MeshId, GLTFResult]):
+      .jsonlFoldZIO[Map[MeshId, GLTFResult], OrganisationView](Map.empty[MeshId, GLTFResult]):
         addOrganisationPinner(
           globeGroup,
           loader
@@ -117,13 +117,13 @@ object Earth {
 
   def addOrganisationPinner(globeGroup: Group, loader: GLTFLoader)(
     cache: Map[MeshId, GLTFResult],
-    organisation: Organisation
+    organisation: OrganisationView
   ): ZIO[Any, Throwable, Map[MeshId, GLTFResult]] =
     val (meshId, meshUrl) = organisation.meshId match {
       case Some(id) =>
         (id, FetchBackendClientLive.url("api", "mesh", id.toString()))
       case None =>
-        (org.worldofscala.earth.Mesh.default, FetchBackendClientLive.resourceUrl("res", "pinner.glb"))
+        (org.worldofscala.earth.MeshView.default, FetchBackendClientLive.resourceUrl("res", "pinner.glb"))
     }
 
     val meshIO = cache.get(meshId) match {
@@ -147,7 +147,7 @@ object Earth {
       if addToCache then cache + (meshId -> obj)
       else cache
 
-  def addPinner(globeGroup: Group, obj: GLTFResult, location: LatLon) =
+  def addPinner(globeGroup: Group, obj: GLTFResult, location: LatLonView) =
     val pinner    = obj.scene.jsClone(true)
     val (x, y, z) = location.xyz(R + 0.02)
     pinner.position.set(x, y, z)

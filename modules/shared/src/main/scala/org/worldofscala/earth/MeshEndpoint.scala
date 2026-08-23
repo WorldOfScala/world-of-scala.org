@@ -10,7 +10,7 @@ import java.io.InputStream
 
 object MeshEndpoint extends BaseEndpoint {
 
-  val streamCreate: Endpoint[String, (String, InputStream), Throwable, Mesh.Id, Any] = baseSecuredEndpoint
+  val streamCreate: Endpoint[String, (String, InputStream), Throwable, MeshView.Id, Any] = baseSecuredEndpoint
     .tag("Admin")
     .name("mesh-create")
     .post
@@ -19,16 +19,16 @@ object MeshEndpoint extends BaseEndpoint {
       inputStreamBody
         .description("Mesh to insert")
     )
-    .out(jsonBody[Mesh.Id])
+    .out(jsonBody[MeshView.Id])
     .description("Create mesh")
 
-  val putThumbnail: Endpoint[String, (Mesh.Id, InputStream), Throwable, Mesh.Id, Any] = baseSecuredEndpoint
+  val putThumbnail: Endpoint[String, (MeshView.Id, InputStream), Throwable, MeshView.Id, Any] = baseSecuredEndpoint
     .tag("Admin")
     .name("mesh-create")
     .put
-    .in("mesh" / path[Mesh.Id]("id") / "thumbnail")
+    .in("mesh" / path[MeshView.Id]("id") / "thumbnail")
     .in(inputStreamBody.description("Thumbnail"))
-    .out(jsonBody[Mesh.Id])
+    .out(jsonBody[MeshView.Id])
     .description("Create mesh")
 
   val all: PublicEndpoint[Unit, Throwable, Seq[MeshEntry], Any] = baseEndpoint
@@ -39,11 +39,11 @@ object MeshEndpoint extends BaseEndpoint {
     .out(jsonBody[Seq[MeshEntry]])
     .description("Get all meshes")
 
-  val get: Endpoint[Unit, Mesh.Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint
+  val get: Endpoint[Unit, MeshView.Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint
     .tag("Admin")
     .name("mesh")
     .get
-    .in("mesh" / path[Mesh.Id]("id"))
+    .in("mesh" / path[MeshView.Id]("id"))
     .out(streamBody(ZioStreams)(Schema.binary, CodecFormat.OctetStream()))
     .description("Get mesh")
 
