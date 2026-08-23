@@ -45,6 +45,7 @@ object HttpApi extends Routes[Deps] {
       JWTServiceLive.configuredLayer,
       // Repository layers
       UserRepositoryLive.layer,
+
       OrganisationRepositoryLive.layer,
       MeshRepositoryLive.layer
 

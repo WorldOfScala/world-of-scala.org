@@ -83,6 +83,9 @@ lazy val domain = project
 lazy val persistenceMagnum = project
   .in(file("modules/backend/persistence/magnum"))
   .dependsOn(domain)
+  .settings(
+    persistenceMagnumLibraryDependencies
+  )
 //
 // Server project
 // It depends on sharedJvm project, a project that contains shared code between server and client

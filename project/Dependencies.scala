@@ -53,7 +53,8 @@ object Dependencies {
   )
 
   private val magnumDependencies = Seq(
-    "dev.cheleb" %% "zio-magnum-opentelemetry" % Versions.zioMagnum
+    "io.scalaland" %% "chimney"                  % Versions.chimney,
+    "dev.cheleb"   %% "zio-magnum-opentelemetry" % Versions.zioMagnum
   )
 
   private val jwtDependencies = Seq(
@@ -65,12 +66,15 @@ object Dependencies {
       "dev.zio" %% "zio" % Versions.zio
     )
 
+  val persistenceMagnumLibraryDependencies =
+    libraryDependencies ++= magnumDependencies
+
   val serverLibraryDependencies =
     libraryDependencies ++= Seq(
-      "io.getkyo"                       %% "kyo-prelude"                     % Versions.kyo,
-      "io.getkyo"                       %% "kyo-scheduler-zio"               % Versions.kyo,
-      "io.getkyo"                       %% "kyo-zio"                         % Versions.kyo,
-      "io.scalaland"                    %% "chimney"                         % Versions.chimney,
+      "io.getkyo" %% "kyo-prelude"       % Versions.kyo,
+      "io.getkyo" %% "kyo-scheduler-zio" % Versions.kyo,
+      "io.getkyo" %% "kyo-zio"           % Versions.kyo,
+
       "com.softwaremill.sttp.tapir"     %% "tapir-zio"                       % Versions.tapir,
       "com.softwaremill.sttp.tapir"     %% "tapir-zio-opentelemetry"         % Versions.tapir,
       "com.softwaremill.sttp.tapir"     %% "tapir-opentelemetry-metrics"     % Versions.tapir,

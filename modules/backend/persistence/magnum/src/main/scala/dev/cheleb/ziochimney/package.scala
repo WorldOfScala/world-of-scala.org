@@ -11,6 +11,13 @@ extension [R, A](zio: RIO[R, A])
     zio.map:
       transformer.transform
 
+extension [R, A](zio: RIO[R, Option[A]])
+  @targetName("mapIntoOption")
+  def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Option[B]] =
+    zio.map:
+      _.map:
+        transformer.transform
+
 extension [R, A](zio: RIO[R, Seq[A]])
   @targetName("mapIntoList")
   def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Seq[B]] =

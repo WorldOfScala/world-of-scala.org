@@ -7,31 +7,13 @@ case class NewUser(
   firstname: String,
   lastname: String,
   email: String,
-  password: Password,
-  passwordConfirmation: Password
-):
-  def errorMessages =
-    NewUser.validate(this)
-
-object NewUser {
-  private val emailRegex = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$".r
-
-  def isValidEmail(email: String): Boolean =
-    emailRegex.matches(email)
-
-  def validate(newUser: NewUser): List[String] = {
-    val emailErrors =
-      if isValidEmail(newUser.email) then Nil else List("Invalid email format")
-    val passwordErrors =
-      if newUser.password == newUser.passwordConfirmation then Nil else List("Passwords do not match")
-    emailErrors ++ passwordErrors
-  }
-}
+  hashedPassword: String,
+  creationDate: java.time.OffsetDateTime
+)
 
 opaque type Password <: String = String
 
 object Password:
-
   def apply(password: String): Password = password
 
 case class User(
@@ -42,8 +24,10 @@ case class User(
   hashedPassword: String,
   creationDate: OffsetDateTime
 )
-object User:
 
+object User:
   opaque type Id <: UUID = UUID
+  object Id:
+    def apply(uuid: UUID): Id = uuid
 
 case class UserID(id: User.Id, email: String)
