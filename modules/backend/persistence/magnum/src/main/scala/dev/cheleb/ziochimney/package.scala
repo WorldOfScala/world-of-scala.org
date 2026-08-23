@@ -6,8 +6,8 @@ import zio.stream.ZStream
 
 import scala.annotation.targetName
 
-extension [R, A](zio: RIO[R, A])
-  inline transparent def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): RIO[R, B] =
+extension [R, E, A](zio: ZIO[R, E, A])
+  inline transparent def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): ZIO[R, E, B] =
     zio.map:
       transformer.transform
 

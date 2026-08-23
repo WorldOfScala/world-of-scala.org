@@ -19,8 +19,7 @@ case class OrganisationServiceLive(organisationRepository: OrganisationRepositor
   override def streamAll(): UIO[ZStream[Any, Throwable, Organisation]] =
     organisationRepository
       .streamAll()
-      .map(_.map(_.into[Organisation].transform))
-  //   .mapInto[Organisation]
+      .map(_.mapInto[Organisation])
 
   override def listAll(): Task[Seq[Organisation]] = organisationRepository
     .listAll()
