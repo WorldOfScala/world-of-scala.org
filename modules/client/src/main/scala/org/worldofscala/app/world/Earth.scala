@@ -8,7 +8,7 @@ import dev.cheleb.ziotapir.laminar.*
 import dev.cheleb.zthreesjs.*
 import org.scalajs.dom.window
 import org.worldofscala.app.world.SceneHelper.*
-import org.worldofscala.earth.MeshView.Id as MeshId
+import org.worldofscala.domain.organisation.Mesh.Id as MeshId
 import org.worldofscala.organisation.LatLonView
 import org.worldofscala.organisation.OrganisationView
 import org.worldofscala.organisation.OrganisationEndpoint

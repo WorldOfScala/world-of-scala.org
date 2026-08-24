@@ -7,10 +7,13 @@ import sttp.tapir.json.zio.*
 import zio.stream.ZStream
 
 import java.io.InputStream
+import org.worldofscala.domain.organisation.Mesh
 
 object MeshEndpoint extends BaseEndpoint {
 
-  val streamCreate: Endpoint[String, (String, InputStream), Throwable, MeshView.Id, Any] = baseSecuredEndpoint
+  import MeshView.given
+
+  val streamCreate: Endpoint[String, (String, InputStream), Throwable, Mesh.Id, Any] = baseSecuredEndpoint
     .tag("Admin")
     .name("mesh-create")
     .post
@@ -19,16 +22,16 @@ object MeshEndpoint extends BaseEndpoint {
       inputStreamBody
         .description("Mesh to insert")
     )
-    .out(jsonBody[MeshView.Id])
+    .out(jsonBody[Mesh.Id])
     .description("Create mesh")
 
-  val putThumbnail: Endpoint[String, (MeshView.Id, InputStream), Throwable, MeshView.Id, Any] = baseSecuredEndpoint
+  val putThumbnail: Endpoint[String, (Mesh.Id, InputStream), Throwable, Mesh.Id, Any] = baseSecuredEndpoint
     .tag("Admin")
     .name("mesh-create")
     .put
-    .in("mesh" / path[MeshView.Id]("id") / "thumbnail")
+    .in("mesh" / path[Mesh.Id]("id") / "thumbnail")
     .in(inputStreamBody.description("Thumbnail"))
-    .out(jsonBody[MeshView.Id])
+    .out(jsonBody[Mesh.Id])
     .description("Create mesh")
 
   val all: PublicEndpoint[Unit, Throwable, Seq[MeshEntry], Any] = baseEndpoint
@@ -39,11 +42,11 @@ object MeshEndpoint extends BaseEndpoint {
     .out(jsonBody[Seq[MeshEntry]])
     .description("Get all meshes")
 
-  val get: Endpoint[Unit, MeshView.Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint
+  val get: Endpoint[Unit, Mesh.Id, Throwable, ZStream[Any, Throwable, Byte], ZioStreams] = baseEndpoint
     .tag("Admin")
     .name("mesh")
     .get
-    .in("mesh" / path[MeshView.Id]("id"))
+    .in("mesh" / path[Mesh.Id]("id"))
     .out(streamBody(ZioStreams)(Schema.binary, CodecFormat.OctetStream()))
     .description("Get mesh")
 

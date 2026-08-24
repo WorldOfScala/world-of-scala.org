@@ -1,31 +1,32 @@
 package org.worldofscala.earth
 
 import io.scalaland.chimney.dsl.*
-import org.worldofscala.earth.MeshView.Id
+import dev.cheleb.ziochimney.*
 import zio.*
 
 import java.io.InputStream
+import org.worldofscala.domain.organisation.Mesh
+import org.worldofscala.domain.organisation.MeshMagnumPersistancePort
 
 trait MeshService:
-  def createStream(name: String, stream: InputStream): Task[MeshView.Id]
-  def updateThumnail(id: MeshView.Id, thumbnail: InputStream): Task[MeshView.Id]
-  def get(id: MeshView.Id): Task[MeshView]
+  def createStream(name: String, stream: InputStream): Task[Mesh.Id]
+  def updateThumnail(id: Mesh.Id, thumbnail: InputStream): Task[Mesh.Id]
+  def get(id: Mesh.Id): Task[MeshView]
   def listAll(): Task[Seq[MeshEntry]]
 
-case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
+case class MeshServiceLive(meshRepository: MeshMagnumPersistancePort) extends MeshService {
 
-  override def get(id: Id): Task[MeshView] = meshRepository
+  override def get(id: Mesh.Id): Task[MeshView] = meshRepository
     .get(id)
     .someOrFail(new Exception("Mesh not found"))
     .map(_.into[MeshView].transform)
 
-  def createStream(name: String, stream: InputStream): Task[MeshView.Id] =
-    val newMeshEntity = NewMeshEntity(name, stream.readAllBytes())
+  def createStream(name: String, stream: InputStream): Task[Mesh.Id] =
     meshRepository
-      .saveMesh(newMeshEntity)
+      .saveMesh(name, stream.readAllBytes())
       .map(_.id)
 
-  def updateThumnail(id: Id, thumbnail: InputStream): Task[MeshView.Id] =
+  def updateThumnail(id: Mesh.Id, thumbnail: InputStream): Task[Mesh.Id] =
     meshRepository
       .updateThumbnail(id, Some(String(thumbnail.readAllBytes())))
       .map(_ => id)
@@ -33,9 +34,10 @@ case class MeshServiceLive(meshRepository: MeshRepository) extends MeshService {
   def listAll(): Task[Seq[MeshEntry]] =
     meshRepository
       .listMeshes()
-      .map(meshes => MeshView.defaulEntry +: meshes)
+      .map(meshes => Mesh.defaulEntry +: meshes)
+      .mapInto[MeshEntry]
 
 }
 
 object MeshServiceLive:
-  def layer: ZLayer[MeshRepository, Nothing, MeshService] = ZLayer.derive[MeshServiceLive]
+  def layer: ZLayer[MeshMagnumPersistancePort, Nothing, MeshService] = ZLayer.derive[MeshServiceLive]

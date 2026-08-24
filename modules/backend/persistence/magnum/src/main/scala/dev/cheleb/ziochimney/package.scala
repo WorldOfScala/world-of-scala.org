@@ -27,7 +27,7 @@ extension [R, E, A](zio: ZIO[R, E, Seq[A]])
 
 extension [R, A](zio: RIO[R, Vector[A]])
   @targetName("mapIntoVertor")
-  inline transparent def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Vector[B]] =
+  inline transparent def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): RIO[R, Vector[B]] =
     zio.map:
       _.map:
         transformer.transform

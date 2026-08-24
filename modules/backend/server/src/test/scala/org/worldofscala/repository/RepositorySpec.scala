@@ -24,7 +24,7 @@ trait RepositorySpec(init: String) {
     dataSource.setPassword(container.getPassword)
     dataSource
 
-  val dataSouurceLayer = ZLayer {
+  val dataSourceLayer = ZLayer {
     for {
       container <- ZIO.acquireRelease(ZIO.attempt(postgres()))(container => ZIO.attempt(container.stop()).ignoreLogged)
     } yield createDataSource(container)

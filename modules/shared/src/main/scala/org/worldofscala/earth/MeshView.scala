@@ -1,30 +1,24 @@
 package org.worldofscala.earth
 
-import org.worldofscala.UUIDOpaque
 import sttp.tapir.Codec
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 
 import java.util.UUID
+import org.worldofscala.domain.organisation.Mesh
+import org.worldofscala.UUIDOpaque2
 
-final case class MeshView(id: MeshView.Id, label: String, blob: Array[Byte]) derives JsonCodec, Schema
-final case class MeshEntry(id: MeshView.Id, label: String, thumbnail: Option[String], count: Long)
+final case class MeshView(id: Mesh.Id, label: String, blob: Array[Byte], thumbnail: Option[String])
     derives JsonCodec,
       Schema
 
-object MeshView:
+object MeshView extends UUIDOpaque2[Mesh.Id](Mesh.Id(_)):
 
-  def default = MeshView.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+  def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
 
-  def defaulEntry = MeshEntry(default, "Pinner", None, 0L)
+  def defaulEntry = org.worldofscala.domain.organisation.MeshEntry(default, "Pinner", None, 0L)
 
-  opaque type Id <: UUID = UUID
+  given Codec.PlainCodec[Mesh.Id] = Codec.parsedString(str => Mesh.Id(UUID.fromString(str)))
 
-  object Id extends UUIDOpaque[Id](JsonCodec.uuid, Schema.schemaForUUID):
-    def apply(uuid: UUID): Id = uuid
-
-    given Codec.PlainCodec[Id] = Codec.uuid
-
-  extension (id: Id) {
-    def <(that: UUID) = id.toString < that.toString
-  }
+final case class MeshEntry(id: Mesh.Id, label: String, thumbnail: Option[String], count: Long) derives JsonCodec, Schema
+object MeshEntry extends UUIDOpaque2[Mesh.Id](Mesh.Id(_))

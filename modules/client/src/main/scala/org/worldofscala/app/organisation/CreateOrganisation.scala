@@ -10,6 +10,7 @@ import org.worldofscala.auth.UserToken
 import org.worldofscala.earth.MeshView
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
+import org.worldofscala.domain.organisation.Mesh
 
 object CreateOrganisation extends SecuredContent[UserToken]:
 
@@ -49,7 +50,7 @@ object CreateOrganisation extends SecuredContent[UserToken]:
       div(
         styleAttr := "float: left;",
         child <-- meshes.events.toSignal(Nil).map { meshes =>
-          given Form[MeshView.Id] = selectMappedForm(meshes, m => m._1, m => m._2)
+          given Form[Mesh.Id] = selectMappedForm(meshes, m => m._1, m => m._2)
           organisationVar.asForm
         },
         children <-- organisationVar.signal.map {

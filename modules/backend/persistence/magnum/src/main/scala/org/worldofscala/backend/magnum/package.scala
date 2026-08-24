@@ -28,5 +28,5 @@ implicit val lalDbCodec: DbCodec[LatLon] = new DbCodec[LatLon] {
       LatLon(point.x, point.y)
     }
   override def writeSingle(entity: LatLon, ps: PreparedStatement, pos: Int): Unit =
-    ps.setObject(pos, entity, java.sql.Types.OTHER)
+    ps.setObject(pos, s"${entity.lat},${entity.lon}", java.sql.Types.OTHER)
 }
