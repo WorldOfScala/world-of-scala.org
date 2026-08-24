@@ -64,7 +64,8 @@ object Dependencies {
 
   val domainLibraryDependencies =
     libraryDependencies ++= Seq(
-      "dev.zio" %% "zio" % Versions.zio
+      "dev.zio" %% "zio"         % Versions.zio,
+      "dev.zio" %% "zio-streams" % Versions.zio
     )
 
   val persistenceMagnumLibraryDependencies =

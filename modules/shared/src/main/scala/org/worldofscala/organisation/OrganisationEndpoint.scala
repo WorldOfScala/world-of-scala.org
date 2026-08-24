@@ -1,7 +1,7 @@
 package org.worldofscala.organisation
 
 import org.worldofscala.BaseEndpoint
-import org.worldofscala.earth.MeshView
+
 import sttp.capabilities.zio.ZioStreams
 import sttp.tapir.*
 import sttp.tapir.generic.auto.*
@@ -9,6 +9,7 @@ import sttp.tapir.json.zio.*
 import zio.*
 import zio.stream.*
 import org.worldofscala.user.UserView
+import org.worldofscala.domain.organisation.Mesh
 
 object OrganisationEndpoint extends BaseEndpoint:
 
@@ -27,7 +28,7 @@ object OrganisationEndpoint extends BaseEndpoint:
           NewOrganisationWiew(
             "EPFL",
             LatLonView(46.519653, 6.632273),
-            MeshView.default
+            Mesh.default
           )
         )
     )

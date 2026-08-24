@@ -2,13 +2,14 @@ package org.worldofscala.domain.organisation
 
 import java.time.OffsetDateTime
 import java.util.UUID
+import org.worldofscala.domain.user.User
 
 case class Organisation(
   id: Organisation.Id,
   name: String,
   location: LatLon,
   meshId: Option[Mesh.Id],
-  createdBy: org.worldofscala.domain.user.User.Id,
+  createdBy: User.Id,
   creationDate: OffsetDateTime
 )
 object Organisation:

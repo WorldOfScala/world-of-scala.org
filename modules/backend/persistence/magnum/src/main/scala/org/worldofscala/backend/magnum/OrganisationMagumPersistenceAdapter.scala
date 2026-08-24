@@ -6,9 +6,10 @@ import com.augustnagro.magnum.ziomagnum.*
 //import com.augustnagro.magnum.ziomagnum.ZIOMagnumTracer
 
 import io.scalaland.chimney.Transformer
+import dev.cheleb.ziochimney.*
 import org.worldofscala.*
 import org.worldofscala.domain.user.User
-import org.worldofscala.domain.organisation.{Organisation, LatLon, Mesh}
+import org.worldofscala.domain.organisation.{Organisation, LatLon, Mesh, OrganisationPersistencePort}
 
 import zio.*
 import zio.stream.ZStream
@@ -16,12 +17,6 @@ import zio.stream.ZStream
 import java.sql.PreparedStatement
 import java.sql.ResultSet
 import javax.sql.DataSource
-
-trait OrganisationRepository {
-  def create(org: NewOrganisationEntity): Task[OrganisationEntity]
-  def listAll(): Task[Seq[OrganisationEntity]]
-  def streamAll(): UIO[ZStream[Any, Throwable, OrganisationEntity]]
-}
 
 import org.worldofscala.backend.magnum.UserEntity.given
 import MeshEntity.given
@@ -50,25 +45,36 @@ case class OrganisationEntity(
 object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
   given Transformer[OrganisationEntity, Organisation] = Transformer.derive
 
-class OrganisationRepositoryLive private (using DataSource, ZIOMagnumTracer, SqlLogger) extends OrganisationRepository {
+class OrganisationPersistenceAdapterLive private (using DataSource, ZIOMagnumTracer, SqlLogger)
+    extends OrganisationPersistencePort {
 
   import OrganisationEntity.given
 
   val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
 
-  override def streamAll(): UIO[ZStream[Any, Throwable, OrganisationEntity]] =
+  override def streamAll(): UIO[ZStream[Any, Throwable, Organisation]] =
     sql"SELECT id, name, mesh_id, location, created_by, creation_date FROM organisations"
       .zStream[OrganisationEntity]("organisations")
+      .map(_.mapInto[Organisation])
 
-  override def create(orga: NewOrganisationEntity): Task[OrganisationEntity] =
-    repo.zInsertReturning(orga)
+  override def create(
+    name: String,
+    meshId: Option[Mesh.Id],
+    location: LatLon,
+    createdBy: User.Id,
+    creationDate: java.time.OffsetDateTime
+  ): Task[Organisation] =
+    repo
+      .zInsertReturning(new NewOrganisationEntity(name, meshId, location, createdBy, creationDate))
+      .mapInto[Organisation]
 
-  override def listAll(): Task[Vector[OrganisationEntity]] =
+  override def listAll(): Task[Vector[Organisation]] =
     repo.zFindAll
+      .mapInto[Organisation]
 }
 
-object OrganisationRepositoryLive {
+object OrganisationPersistenceAdapterLive {
 
   def layer =
-    ZLayer.derive[OrganisationRepositoryLive]
+    ZLayer.derive[OrganisationPersistenceAdapterLive]
 }

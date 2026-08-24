@@ -18,16 +18,23 @@ extension [R, A](zio: RIO[R, Option[A]])
       _.map:
         transformer.transform
 
-extension [R, A](zio: RIO[R, Seq[A]])
+extension [R, E, A](zio: ZIO[R, E, Seq[A]])
   @targetName("mapIntoList")
-  inline transparent def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Seq[B]] =
+  def mapInto[B](using transformer: Transformer.AutoDerived[A, B]): ZIO[R, E, Seq[B]] =
+    zio.map:
+      _.map:
+        transformer.transform
+
+extension [R, A](zio: RIO[R, Vector[A]])
+  @targetName("mapIntoVertor")
+  inline transparent def mapInto[B](using transformer: Transformer[A, B]): RIO[R, Vector[B]] =
     zio.map:
       _.map:
         transformer.transform
 
 extension [R, A](zstream: ZStream[Any, Throwable, A])
   inline transparent def mapInto[B](using
-    transformer: Transformer[A, B]
+    transformer: Transformer.AutoDerived[A, B]
   ): ZStream[Any, Throwable, B] =
     zstream.map:
       transformer.transform

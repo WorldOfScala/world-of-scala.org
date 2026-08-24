@@ -9,6 +9,8 @@ opaque type Id <: UUID = UUID
 
 object Mesh:
 
+  def default = Mesh.Id(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+
   opaque type Id <: UUID = UUID
   object Id:
     def apply(uuid: UUID): Id = uuid

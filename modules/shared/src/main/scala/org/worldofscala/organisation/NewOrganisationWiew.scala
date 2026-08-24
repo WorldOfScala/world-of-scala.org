@@ -2,7 +2,6 @@ package org.worldofscala.organisation
 
 import dev.cheleb.scalamigen.NoPanel
 import org.worldofscala.UUIDOpaque
-import org.worldofscala.earth.MeshView
 
 import sttp.tapir.Schema
 import zio.json.JsonCodec
@@ -17,16 +16,20 @@ import Math.{cos, sin, PI}
 import org.worldofscala.domain.user.User
 import org.worldofscala.domain.organisation.Organisation
 import org.worldofscala.UUIDOpaque2
+import org.worldofscala.UUIDOpaque_2
+import org.worldofscala.domain.organisation.Mesh
 
 @NoPanel
 case class NewOrganisationWiew(
   name: String,
   location: LatLonView,
-  meshId: MeshView.Id
+  meshId: Mesh.Id
 ) derives JsonCodec,
       Schema,
       Debug:
   def errorMessages: Seq[String] = Seq.empty
+
+object NewOrganisationWiew extends UUIDOpaque2[Mesh.Id](Mesh.Id(_))
 
 /**
  * LatLon
@@ -59,7 +62,7 @@ case class OrganisationView(
   id: Organisation.Id,
   name: String,
   location: LatLonView,
-  meshId: Option[MeshView.Id],
+  meshId: Option[Mesh.Id],
   createdBy: User.Id,
   creationDate: OffsetDateTime
 ) derives JsonCodec,
@@ -67,7 +70,7 @@ case class OrganisationView(
       Debug:
   def errorMessages: Seq[String] = Seq.empty
 
-object OrganisationView extends UUIDOpaque2[Organisation.Id](Organisation.Id(_)):
+object OrganisationView extends UUIDOpaque2[Organisation.Id](Organisation.Id(_)) with UUIDOpaque_2[Mesh.Id](Mesh.Id(_)):
   given Debug[OffsetDateTime] with
     def debug(value: OffsetDateTime): Repr = Repr.String(value.toString)
 
