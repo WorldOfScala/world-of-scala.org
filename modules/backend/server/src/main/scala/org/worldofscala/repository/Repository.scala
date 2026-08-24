@@ -5,7 +5,6 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import zio.*
 
-import java.util.UUID
 import javax.sql.DataSource
 
 def datasourceLayer: TaskLayer[DataSource] = ZLayer.scoped {
@@ -22,7 +21,3 @@ def datasourceLayer: TaskLayer[DataSource] = ZLayer.scoped {
 }
 
 def dataLayer: TaskLayer[DataSource] = datasourceLayer
-
-trait UUIDMapper[A](a2id: A => UUID, id2a: UUID => A) {
-  given DbCodec[A] = DbCodec.UUIDCodec.biMap[A](id2a, a2id)
-}

@@ -22,12 +22,10 @@ case class OrganisationServiceLive(organisationRepository: OrganisationPersisten
   override def streamAll(): UIO[ZStream[Any, Throwable, OrganisationView]] =
     organisationRepository
       .streamAll()
-      //  .map(_.map(_.transformInto[OrganisationView]))
       .map(_.mapInto[OrganisationView])
 
   override def listAll(): Task[Seq[OrganisationView]] = organisationRepository
     .listAll()
-    //  .map(_.map(_.transformInto[OrganisationView]))
     .mapInto[OrganisationView]
 
   override def create(organisation: NewOrganisationWiew, userUUID: User.Id): Task[OrganisationView] =

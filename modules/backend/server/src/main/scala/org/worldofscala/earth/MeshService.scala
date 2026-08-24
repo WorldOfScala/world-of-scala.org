@@ -19,7 +19,7 @@ case class MeshServiceLive(meshRepository: MeshMagnumPersistancePort) extends Me
   override def get(id: Mesh.Id): Task[MeshView] = meshRepository
     .get(id)
     .someOrFail(new Exception("Mesh not found"))
-    .map(_.into[MeshView].transform)
+    .mapInto[MeshView]
 
   def createStream(name: String, stream: InputStream): Task[Mesh.Id] =
     meshRepository
