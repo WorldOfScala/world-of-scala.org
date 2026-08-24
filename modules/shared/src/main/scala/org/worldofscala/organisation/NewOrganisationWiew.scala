@@ -18,6 +18,7 @@ import Math.{cos, sin, PI}
 import org.worldofscala.domain.user.User
 import org.worldofscala.domain.organisation.Organisation
 import sttp.tapir.SchemaType.SString
+import org.worldofscala.UUIDOpaque2
 
 @NoPanel
 case class NewOrganisationWiew(
@@ -68,7 +69,7 @@ case class OrganisationView(
       Debug:
   def errorMessages: Seq[String] = Seq.empty
 
-object OrganisationView:
+object OrganisationView extends UUIDOpaque2[Organisation.Id](Organisation.Id(_)):
   given Debug[OffsetDateTime] with
     def debug(value: OffsetDateTime): Repr = Repr.String(value.toString)
 
@@ -76,13 +77,6 @@ object OrganisationView:
 
   given Debug[Organisation.Id] with
     def debug(value: org.worldofscala.domain.organisation.Organisation.Id): Repr = Repr.String(value.toString)
-
-  given JsonCodec[Organisation.Id] = JsonCodec.uuid.transform(
-    uuid => Organisation.Id(uuid),
-    id => id
-  )
-  given Schema[Organisation.Id] =
-    Schema(SString[Organisation.Id]()).format("uuid")
 
   opaque type Id <: UUID = UUID
 

@@ -11,6 +11,7 @@ import org.worldofscala.earth.MeshView
 import org.worldofscala.earth.MeshEntity
 import org.worldofscala.repository.*
 import org.worldofscala.domain.user.User
+import org.worldofscala.domain.organisation.Organisation
 import org.worldofscala.user.UserEntity
 import zio.*
 import zio.stream.ZStream
@@ -41,7 +42,7 @@ case class NewOrganisationEntity(
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
 @SqlName("organisations")
 case class OrganisationEntity(
-  @Id id: OrganisationView.Id,
+  @Id id: Organisation.Id,
   name: String,
   meshId: Option[MeshView.Id],
   location: LatLonView,
@@ -49,14 +50,14 @@ case class OrganisationEntity(
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-object OrganisationEntity extends UUIDMapper[OrganisationView.Id](identity, OrganisationView.Id.apply):
+object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
   given Transformer[OrganisationEntity, OrganisationView] = Transformer.derive
 
 class OrganisationRepositoryLive private (using DataSource, ZIOMagnumTracer, SqlLogger) extends OrganisationRepository {
 
   import OrganisationEntity.given
 
-  val repo = Repo[NewOrganisationEntity, OrganisationEntity, OrganisationView.Id]
+  val repo = Repo[NewOrganisationEntity, OrganisationEntity, Organisation.Id]
 
   override def streamAll(): UIO[ZStream[Any, Throwable, OrganisationEntity]] =
     sql"SELECT id, name, mesh_id, location, created_by, creation_date FROM organisations"

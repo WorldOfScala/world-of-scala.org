@@ -6,6 +6,7 @@ import zio.prelude.*
 import zio.prelude.Debug.Repr
 
 import java.util.UUID
+import sttp.tapir.SchemaType.SString
 
 trait UUIDOpaque[ID <: UUID](json: JsonCodec[ID], schema: Schema[ID]):
   given JsonCodec[ID] = json
@@ -14,11 +15,11 @@ trait UUIDOpaque[ID <: UUID](json: JsonCodec[ID], schema: Schema[ID]):
   given Debug[ID] with
     def debug(value: ID): Repr = Repr.String(value.toString)
 
-trait UUIDOpaque2[ID <: UUID](f: UUID => ID, schema: Schema[ID]):
+trait UUIDOpaque2[ID <: UUID](f: UUID => ID):
   given JsonCodec[ID] = JsonCodec.uuid.transform(
     uuid => f(uuid),
     id => id
   )
-  given Schema[ID] = schema
+  given Schema[ID] = Schema(SString[ID]()).format("uuid")
   given Debug[ID] with
     def debug(value: ID): Repr = Repr.String(value.toString)
