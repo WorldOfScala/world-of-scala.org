@@ -13,6 +13,7 @@ import org.worldofscala.user.UserView
 object OrganisationEndpoint extends BaseEndpoint:
 
   import UserView.given
+  import OrganisationView.given
 
   val create: Endpoint[String, NewOrganisationWiew, Throwable, OrganisationView, Any] = baseSecuredEndpoint
     .tag("Organisation")

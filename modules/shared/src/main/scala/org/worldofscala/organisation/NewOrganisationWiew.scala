@@ -16,6 +16,7 @@ import java.util.UUID
 
 import Math.{cos, sin, PI}
 import org.worldofscala.domain.user.User
+import org.worldofscala.domain.organisation.Organisation
 import sttp.tapir.SchemaType.SString
 
 @NoPanel
@@ -56,7 +57,7 @@ object LatLonView:
   val empty: LatLonView = LatLonView(0.0, 0.0)
 
 case class OrganisationView(
-  id: OrganisationView.Id,
+  id: Organisation.Id,
   name: String,
   location: LatLonView,
   meshId: Option[MeshView.Id],
@@ -71,15 +72,17 @@ object OrganisationView:
   given Debug[OffsetDateTime] with
     def debug(value: OffsetDateTime): Repr = Repr.String(value.toString)
 
-  given Debug[org.worldofscala.domain.user.User.Id] with
-    def debug(value: org.worldofscala.domain.user.User.Id): Repr = Repr.String(value.toString)
+  import org.worldofscala.user.UserView.given
 
-  given JsonCodec[User.Id] = JsonCodec.uuid.transform(
-    uuid => User.Id(uuid),
+  given Debug[Organisation.Id] with
+    def debug(value: org.worldofscala.domain.organisation.Organisation.Id): Repr = Repr.String(value.toString)
+
+  given JsonCodec[Organisation.Id] = JsonCodec.uuid.transform(
+    uuid => Organisation.Id(uuid),
     id => id
   )
-  given Schema[User.Id] =
-    Schema(SString[User.Id]()).format("uuid")
+  given Schema[Organisation.Id] =
+    Schema(SString[Organisation.Id]()).format("uuid")
 
   opaque type Id <: UUID = UUID
 

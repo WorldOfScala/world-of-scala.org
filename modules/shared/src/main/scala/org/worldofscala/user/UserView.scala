@@ -65,6 +65,10 @@ case class UserView(
       Schema
 
 object UserView:
+
+  given Debug[User.Id] with
+    def debug(value: User.Id): Repr = Repr.String(value.toString)
+
   given JsonCodec[User.Id] = JsonCodec.uuid.transform(
     uuid => User.Id(uuid),
     id => id
