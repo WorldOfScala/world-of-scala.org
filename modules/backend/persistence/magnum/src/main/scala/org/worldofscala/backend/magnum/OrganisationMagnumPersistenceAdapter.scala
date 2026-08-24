@@ -42,10 +42,9 @@ case class OrganisationEntity(
   creationDate: java.time.OffsetDateTime
 ) derives DbCodec
 
-object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply):
-  given Transformer[OrganisationEntity, Organisation] = Transformer.derive
+object OrganisationEntity extends UUIDMapper[Organisation.Id](identity, Organisation.Id.apply)
 
-class OrganisationPersistenceAdapterLive private (using DataSource, ZIOMagnumTracer, SqlLogger)
+class OrganisationMagnumPersistenceAdapterLive private (using DataSource, ZIOMagnumTracer, SqlLogger)
     extends OrganisationPersistencePort {
 
   import OrganisationEntity.given
@@ -73,8 +72,8 @@ class OrganisationPersistenceAdapterLive private (using DataSource, ZIOMagnumTra
       .mapInto[Organisation]
 }
 
-object OrganisationPersistenceAdapterLive {
+object OrganisationMagnumPersistenceAdapterLive {
 
   def layer =
-    ZLayer.derive[OrganisationPersistenceAdapterLive]
+    ZLayer.derive[OrganisationMagnumPersistenceAdapterLive]
 }

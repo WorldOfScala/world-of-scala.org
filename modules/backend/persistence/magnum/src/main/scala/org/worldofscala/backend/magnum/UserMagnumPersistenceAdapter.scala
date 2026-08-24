@@ -37,7 +37,7 @@ case class UserEntity(
 object UserEntity extends UUIDMapper[User.Id](identity, User.Id.apply):
   given Transformer[UserEntity, User] = Transformer.derive
 
-private class UserMagnunPersistenceAdapterLive private (using DataSource, SqlLogger) extends UserPersistencePort {
+private class UserMagnumPersistenceAdapterLive private (using DataSource, SqlLogger) extends UserPersistencePort {
 
   import UserEntity.given
 
@@ -74,7 +74,7 @@ private class UserMagnunPersistenceAdapterLive private (using DataSource, SqlLog
     yield userEntity.transformInto[User]
 }
 
-object UserMagnunPersistenceAdapterLive {
+object UserMagnumPersistenceAdapterLive {
   def layer: URLayer[DataSource & ZIOMagnumTracer & SqlLogger, UserPersistencePort] =
-    ZLayer.derive[UserMagnunPersistenceAdapterLive]
+    ZLayer.derive[UserMagnumPersistenceAdapterLive]
 }

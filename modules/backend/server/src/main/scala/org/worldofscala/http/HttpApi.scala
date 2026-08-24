@@ -14,8 +14,8 @@ import javax.sql.DataSource
 import zio.telemetry.opentelemetry.tracing.Tracing
 import com.augustnagro.magnum.ziomagnum.ZIOMagnumTracer
 import com.augustnagro.magnum.SqlLogger
-import org.worldofscala.backend.magnum.UserMagnunPersistenceAdapterLive
-import org.worldofscala.backend.magnum.OrganisationPersistenceAdapterLive
+import org.worldofscala.backend.magnum.UserMagnumPersistenceAdapterLive
+import org.worldofscala.backend.magnum.OrganisationMagnumPersistenceAdapterLive
 import org.worldofscala.backend.magnum.MeshMagnumPersistanceAdapterLive
 
 //https://tapir.softwaremill.com/en/latest/server/logic.html
@@ -47,9 +47,9 @@ object HttpApi extends Routes[Deps] {
       MeshServiceLive.layer,
       JWTServiceLive.configuredLayer,
       // Repository layers
-      UserMagnunPersistenceAdapterLive.layer,
+      UserMagnumPersistenceAdapterLive.layer,
 
-      OrganisationPersistenceAdapterLive.layer,
+      OrganisationMagnumPersistenceAdapterLive.layer,
       MeshMagnumPersistanceAdapterLive.layer
 
       // , ZLayer.Debug.mermaid
