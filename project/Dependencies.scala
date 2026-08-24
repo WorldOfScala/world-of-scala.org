@@ -53,8 +53,9 @@ object Dependencies {
   )
 
   private val magnumDependencies = Seq(
-    "io.scalaland" %% "chimney"                  % Versions.chimney,
-    "dev.cheleb"   %% "zio-magnum-opentelemetry" % Versions.zioMagnum
+    "io.scalaland"  %% "chimney"                  % Versions.chimney,
+    "dev.cheleb"    %% "zio-magnum-opentelemetry" % Versions.zioMagnum,
+    "org.postgresql" % "postgresql"               % Versions.postgresql
   )
 
   private val jwtDependencies = Seq(

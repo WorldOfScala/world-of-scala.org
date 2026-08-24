@@ -18,3 +18,6 @@ object Organisation:
     def apply(uuid: UUID): Id = uuid
 
 case class LatLon(lat: Double, lon: Double)
+
+object LatLon:
+  val empty: LatLon = LatLon(0.0, 0.0)

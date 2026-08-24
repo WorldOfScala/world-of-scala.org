@@ -12,7 +12,6 @@ import java.time.OffsetDateTime
 import sttp.tapir.generic.auto.*
 import sttp.tapir.SchemaType.SString
 import org.worldofscala.domain.user.User
-import org.worldofscala.UUIDOpaque
 
 @NoPanel
 case class NewUser(

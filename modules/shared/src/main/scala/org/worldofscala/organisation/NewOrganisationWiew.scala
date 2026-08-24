@@ -4,7 +4,6 @@ import dev.cheleb.scalamigen.NoPanel
 import org.worldofscala.UUIDOpaque
 import org.worldofscala.earth.MeshView
 
-import org.worldofscala.user.given
 import sttp.tapir.Schema
 import zio.json.JsonCodec
 import zio.prelude.*
@@ -17,7 +16,6 @@ import java.util.UUID
 import Math.{cos, sin, PI}
 import org.worldofscala.domain.user.User
 import org.worldofscala.domain.organisation.Organisation
-import sttp.tapir.SchemaType.SString
 import org.worldofscala.UUIDOpaque2
 
 @NoPanel

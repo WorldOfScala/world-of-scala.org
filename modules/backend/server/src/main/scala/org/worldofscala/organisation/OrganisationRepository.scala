@@ -12,7 +12,7 @@ import org.worldofscala.earth.MeshEntity
 import org.worldofscala.repository.*
 import org.worldofscala.domain.user.User
 import org.worldofscala.domain.organisation.Organisation
-import org.worldofscala.user.UserEntity
+
 import zio.*
 import zio.stream.ZStream
 
@@ -26,7 +26,7 @@ trait OrganisationRepository {
   def streamAll(): UIO[ZStream[Any, Throwable, OrganisationEntity]]
 }
 
-import UserEntity.given
+import org.worldofscala.backend.magnum.UserEntity.given
 import MeshEntity.given
 
 @Table(PostgresDbType, SqlNameMapper.CamelToSnakeCase)
