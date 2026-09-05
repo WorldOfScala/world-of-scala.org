@@ -33,32 +33,37 @@ The project leverages a range of modern libraries and frameworks from the Scala 
     *   **sbt:** As the build tool.
     *   **Docker:** For containerizing the application.
     *   **docker-compose:** For orchestrating the application and database services.
-    *   **npm & vite:** For managing frontend dependencies and serving the client in development mode.
+    *   **bun & vite:** For managing frontend dependencies and serving the client in development mode.
     *   **ArgoCD**: For continuous deployment in Kubernetes environments.
 
 
 ## Architecture
 
-The project is divided into three main modules:
+The project follows a hexagonal (ports and adapters) architecture on top of a multi-project sbt build. Code is separated into domain, application, infrastructure, and interface layers across four module groups:
 
-*   **`shared`:** This module contains code that is shared between the server and the client. This includes:
-    *   **Domain Models:** Definitions for users, organizations, and meshes.
-    *   **API Endpoints:** Tapir endpoint definitions that are used by both the server (to implement the API) and the client (to call the API).
-    *   **Error Handling:** A unified error handling mechanism that maps application-specific exceptions to HTTP error codes.
+*   **`domain`** (cross-project, JS & JVM): Pure domain models shared across all modules (`User`, `Mesh`, `NewOrganisation`). This is the innermost layer of the hexagonal architecture.
 
-*   **`server`:** This module contains the backend application logic. Key components include:
-     *   **Controllers:** Implement the logic for the API endpoints defined in the `shared` module.
-     *   **Services:** Contain the business logic for managing users, organizations, and meshes.
-     *   **Repositories:** Provide a type-safe interface for accessing the database using ZIO Magnum.
-     *   **OpenTelemetry Integration:** Implements distributed tracing, structured logging, and metrics collection.
-     *   **Authentication:** Implements JWT-based authentication.
-     *   **Database Migrations:** SQL scripts for managing the database schema with Flyway.
+*   **`backend`** (aggregate project containing three sub-modules):
+    *   **`backend/domain`**: Defines ports (traits) that specify persistence contracts, e.g. `UserPersistencePort`, `OrganisationPersistencePort`, `MeshMagnumPersistencePort`.
+    *   **`backend/persistence/magnum`**: Infrastructure layer implementing the persistence ports using ZIO-Magnum against PostgreSQL.
+    *   **`backend/server`**: Application and interface layer — services (business logic), controllers (HTTP endpoint handlers), OpenTelemetry integration, JWT authentication, and Flyway database migrations.
 
-*   **`client`:** This module contains the frontend application logic, written in Scala.js. Key components include:
-    *   **UI Components:** Built with Laminar to create a reactive and modular user interface.
-    *   **Routing:** Uses `frontroute` to manage client-side navigation.
-    *   **3D Rendering:** Uses Three.js to render the 3D globe and meshes.
-    *   **API Client:** A type-safe API client generated from the Tapir endpoints defined in the `shared` module.
+*   **`shared`** (cross-project, JS & JVM): Code shared between the server and the client. Includes Tapir endpoint definitions, view models, authentication tokens, and a unified error handling mechanism that maps application-specific exceptions to HTTP error codes.
+
+*   **`client`** (Scala.js): The frontend application with Laminar (reactive UI), Three.js (3D globe rendering), and frontroute (client-side routing).
+
+### sbt subproject IDs
+
+| sbt ID | Description |
+|---|---|
+| `root` | Aggregate root |
+| `backend` | Aggregate: `domainBackend`, `server`, `persistenceMagnum` |
+| `domainBackend` | Backend domain ports (traits) |
+| `persistenceMagnum` | ZIO-Magnum persistence adapters |
+| `server` | HTTP server, controllers, services |
+| `domain`, `domainJs`, `domainJvm` | Shared domain models (cross-project) |
+| `shared`, `sharedJs`, `sharedJvm` | Shared endpoints, views, auth (cross-project) |
+| `client` | Scala.js frontend (Laminar, Three.js, frontroute) |
 
 ## Database
 
@@ -92,12 +97,13 @@ The project can also be deployed in a Kubernetes environment using ArgoCD for co
 
 ## Pre-requisites
 
-* JDK
-* sbt
-* Node.js
-* Docker running
+*   JDK 23 (Zulu)
+*   sbt 1.13.0
+*   Scala 3.9.0
+*   bun (Node.js package manager used for client dev server and npm operations)
+*   Docker running
 
-Decent versions of JDK, sbt and Node.js are required.
+Decent versions of JDK, sbt, and Node.js are required.
 
 ## Getting started
 
@@ -109,11 +115,25 @@ To get started, run the following command:
 
 <http://localhost:8080/public/index.html>
 
+### Build & Test Commands
+
+| Command | Description |
+|---|---|
+| `sbt compile` | Compile all main sources |
+| `sbt test` | Run all tests across all modules |
+| `sbt "server/test"` | Run backend server tests |
+| `sbt "shared/test"` | Run shared (JVM) tests |
+| `sbt "testOnly org.worldofscala.service.HasherSuite"` | Run a single test suite |
+| `sbt scalafmtCheckAll` | Check code formatting |
+| `sbt scalafix` | Run Scalafix (OrganizeImports, RemoveUnused) |
+| `./scripts/ci-build.sh` | CI build: compiles server + bundles client |
+| `./scripts/fullstackBuild.sh` | Production build (ESModule) |
+
 ## Development
 
 Development is done in two parts: the server and the client.
 
-* The server is a ZIO application that serves the client.
+* The server is a ZIO HTTP application (in the `server` module under `backend/`) that serves the client.
 
 * The client is a Scala.js application that is served by the server.
 
