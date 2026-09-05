@@ -1,6 +1,5 @@
 package org.worldofscala.repository
 
-import com.augustnagro.magnum.*
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import zio.*
