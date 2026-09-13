@@ -57,7 +57,7 @@ object Dependencies {
   )
 
   private val jwtDependencies = Seq(
-    "com.auth0" % "java-jwt" % "4.6.0"
+    "com.auth0" % "java-jwt" % "4.6.1"
   )
 
   val serverLibraryDependencies =
