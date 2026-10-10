@@ -8,24 +8,25 @@ object Dependencies {
     val chimney                       = "2.0.0-RC1"
     val flywaydb                      = "13.6.0"
     val frontroute                    = "0.19.0"
-    val iron                          = "3.3.2-4-36c079"
+    val iron                          = "3.4.0-RC3"
     val kyo                           = "1.0.0-RC6"
     val javaMail                      = "1.6.2"
-    val laminarFormDerivation         = "1.8.3"
+    val laminarFormDerivation         = "1.8.5"
     val logback                       = "1.5.34"
     val mUnit                         = "1.3.6"
     val osLib                         = "0.11.8"
     val postgresql                    = "42.7.13"
     val scopt                         = "4.1.0"
-    val slf4j                         = "2.0.19"
-    val tapir                         = "1.13.31"
-    val threesjs                      = "0.2.0"
+    val slf4j                         = "2.0.20"
+    val tapir                         = "1.13.33"
+    val threesjs                      = "0.2.1"
     val zio                           = "2.1.26"
     val zioConfig                     = "4.1.0"
     val zioLogging                    = "2.5.3"
-    val zioLaminarTapir               = "8.1.5"
+    val zioLaminarTapir               = "8.1.6"
     val zioOpenTelemetryBootstrap     = "0.0.4"
-    val openTelemetryRuntimeTelemetry = "2.30.0-alpha"
+    val openTelemetryRuntimeTelemetry = "2.32.0-alpha"
+    val zioJson                       = "1.0.0"
     val zioMagnum                     = "3.0.3"
     val zioMock                       = "1.0.0-RC12"
     val zioPrelude                    = "1.0.0-RC48"
@@ -78,6 +79,7 @@ object Dependencies {
       "io.getkyo" %% "kyo-zio"           % Versions.kyo,
 
       "com.softwaremill.sttp.tapir"     %% "tapir-zio"                       % Versions.tapir,
+      "com.softwaremill.sttp.tapir"     %% "tapir-json-zio"                  % Versions.tapir,
       "com.softwaremill.sttp.tapir"     %% "tapir-zio-opentelemetry"         % Versions.tapir,
       "com.softwaremill.sttp.tapir"     %% "tapir-opentelemetry-metrics"     % Versions.tapir,
       "com.softwaremill.sttp.tapir"     %% "tapir-zio-http-server"           % Versions.tapir,
@@ -109,14 +111,14 @@ object Dependencies {
     val sharedJvmAndJsLibraryDependencies: Setting[Seq[ModuleID]] =
       libraryDependencies ++= Seq(
         "com.softwaremill.sttp.tapir" %%% "tapir-zio"                      % Versions.tapir,
-        "com.softwaremill.sttp.tapir" %%% "tapir-iron"                     % Versions.tapir,
         "com.softwaremill.sttp.tapir" %%% "tapir-json-zio"                 % Versions.tapir,
+        "com.softwaremill.sttp.tapir" %%% "tapir-iron"                     % Versions.tapir,
         "dev.cheleb"                  %%% "laminar-form-derivation-shared" % Versions.laminarFormDerivation,
         "dev.cheleb"                  %%% "zio-tapir-shared"               % Versions.zioLaminarTapir,
+        "dev.zio"                     %%% "zio-json"                       % Versions.zioJson,
         "dev.zio"                     %%% "zio-prelude"                    % Versions.zioPrelude,
         "dev.zio"                     %%% "zio-prelude-magnolia"           % Versions.zioPrelude,
-        "dev.zio"                     %%% "zio-schema-json"                % Versions.zioSchema,
-        "io.github.iltotore"           %% "iron-zio-json"                  % Versions.iron
+        "io.github.iltotore"           %% "iron-zio"                       % Versions.iron
       )
 
     val clientLibraryDependencies: Setting[Seq[ModuleID]] =
