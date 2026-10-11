@@ -11,7 +11,6 @@ import org.scalajs.dom.HTMLElement
 import org.scalajs.dom.window
 import org.worldofscala.app.given
 import org.worldofscala.auth.UserToken
-import org.worldofscala.earth.Mesh as OrgaMesh
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
 

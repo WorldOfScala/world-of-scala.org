@@ -12,7 +12,7 @@ import org.worldofscala.user.*
  */
 object ProfilePage extends SecuredContent[UserToken]:
 
-  val userBus = new EventBus[User]
+  val userBus = new EventBus[UserView]
 
   override def init =
     UserEndpoint.profile(()).emit(userBus)

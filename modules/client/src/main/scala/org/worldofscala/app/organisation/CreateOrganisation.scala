@@ -7,22 +7,23 @@ import dev.cheleb.ziotapir.*
 import dev.cheleb.ziotapir.laminar.*
 import org.worldofscala.app.given
 import org.worldofscala.auth.UserToken
-import org.worldofscala.earth.Mesh
+import org.worldofscala.earth.MeshView
 import org.worldofscala.earth.MeshEndpoint
 import org.worldofscala.earth.MeshEntry
+import org.worldofscala.domain.organisation.Mesh
 
 object CreateOrganisation extends SecuredContent[UserToken]:
 
-  given Form[LatLon] = stringFormWithValidation(using
-    new Validator[LatLon] {
-      override def validate(value: String): Either[String, LatLon] =
+  given Form[LatLonView] = stringFormWithValidation(using
+    new Validator[LatLonView] {
+      override def validate(value: String): Either[String, LatLonView] =
         value.split(",") match {
           case Array(lat, lon) =>
             (
               lat.toDoubleOption.toRight("Invalid latitude"),
               lon.toDoubleOption.toRight("Invalid longitude")
             ) match {
-              case (Right(lat), Right(lon))           => Right(LatLon(lat, lon))
+              case (Right(lat), Right(lon))           => Right(LatLonView(lat, lon))
               case (Left(latError), Left(rightError)) =>
                 Left(s"$latError and $rightError")
               case (Left(latError), _) => Left(latError)
@@ -32,8 +33,8 @@ object CreateOrganisation extends SecuredContent[UserToken]:
         }
     }
   )
-  given Defaultable[LatLon] with
-    def default = LatLon(46.5188, 6.5593)
+  given Defaultable[LatLonView] with
+    def default = LatLonView(46.5188, 6.5593)
 
   val meshes = EventBus[Seq[MeshEntry]]()
 
@@ -41,7 +42,7 @@ object CreateOrganisation extends SecuredContent[UserToken]:
     MeshEndpoint.all(()).emit(meshes)
   def securedContent(token: UserToken) =
     val organisationVar = Var(
-      NewOrganisation("", LatLon.empty, Mesh.default)
+      NewOrganisationWiew("", LatLonView.empty, MeshView.default)
     )
 
     div(

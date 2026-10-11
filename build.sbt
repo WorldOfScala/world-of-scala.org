@@ -14,7 +14,7 @@ import DeploymentSettings._
 
 val isCI = Try(sys.env.getOrElse("CI", "false").toBoolean).getOrElse(false)
 
-val scala3 = "3.9.0"
+val scala3 = "3.10.0"
 
 name := "World Of Scala"
 
@@ -58,7 +58,7 @@ inThisBuild(
 lazy val root = project
   .in(file("."))
   .aggregate(
-    server,
+    backend,
     sharedJs,
     sharedJvm,
     client
@@ -73,13 +73,36 @@ lazy val root = project
       startupTransition compose old
     }
   )
+lazy val domain = crossProject(JSPlatform, JVMPlatform)
+  .crossType(CrossType.Pure)
+  .in(file("modules/domain"))
+  .settings(
+    publish / skip := true
+  )
 
+lazy val domainJs  = domain.js
+lazy val domainJvm = domain.jvm
+
+// Backend projects
+lazy val domainBackend = project
+  .in(file("modules/backend/domain"))
+  .dependsOn(domainJvm)
+  .settings(
+    domainLibraryDependencies
+  )
+
+lazy val persistenceMagnum = project
+  .in(file("modules/backend/persistence/magnum"))
+  .dependsOn(domainBackend)
+  .settings(
+    persistenceMagnumLibraryDependencies
+  )
 //
 // Server project
 // It depends on sharedJvm project, a project that contains shared code between server and client
 //
 lazy val server = project
-  .in(file("modules/server"))
+  .in(file("modules/backend/server"))
   .enablePlugins(FullstackPlugin, JavaAppPackaging, DockerPlugin, AshScriptPlugin)
   .settings(
     fork := true,
@@ -87,7 +110,7 @@ lazy val server = project
     testingLibraryDependencies
   )
   .settings(dockerSettings: _*)
-  .dependsOn(sharedJvm)
+  .dependsOn(domainBackend, persistenceMagnum, sharedJvm)
   .settings(
     publish / skip := true
   )
@@ -105,6 +128,18 @@ val usedScalacOptions = Seq(
   "-new-syntax",
   "-Wunused:all"
 )
+
+lazy val backend = project
+  .in(file("modules/backend"))
+  .aggregate(
+    domainBackend,
+    server,
+    persistenceMagnum
+  )
+  .disablePlugins(RevolverPlugin)
+  .settings(
+    publish / skip := true
+  )
 
 //
 // Client project
@@ -139,6 +174,7 @@ lazy val client = scalajsProject("client")
 //
 lazy val shared = crossProject(JSPlatform, JVMPlatform)
   .crossType(CrossType.Pure)
+  .dependsOn(domain)
   .enablePlugins(BuildInfoPlugin)
   .settings(
     buildInfoKeys    := Seq[BuildInfoKey](version, scalaVersion, sbtVersion),

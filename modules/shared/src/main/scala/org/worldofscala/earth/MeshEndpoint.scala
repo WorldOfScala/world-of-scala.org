@@ -7,8 +7,11 @@ import sttp.tapir.json.zio.*
 import zio.stream.ZStream
 
 import java.io.InputStream
+import org.worldofscala.domain.organisation.Mesh
 
 object MeshEndpoint extends BaseEndpoint {
+
+  import MeshView.given
 
   val streamCreate: Endpoint[String, (String, InputStream), Throwable, Mesh.Id, Any] = baseSecuredEndpoint
     .tag("Admin")

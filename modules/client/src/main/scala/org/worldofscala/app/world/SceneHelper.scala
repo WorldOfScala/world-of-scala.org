@@ -2,7 +2,7 @@ package org.worldofscala.app.world
 
 import THREE.*
 import org.scalajs.dom.window
-import org.worldofscala.organisation.LatLon
+import org.worldofscala.organisation.LatLonView
 
 import scala.scalajs.js
 
@@ -10,7 +10,7 @@ import scalajs.js.JSConverters.*
 
 object SceneHelper {
 
-  def newPinner(r: Int, location: LatLon, placeName: String = ""): GLTFResult => Group = obj => {
+  def newPinner(r: Int, location: LatLonView, placeName: String = ""): GLTFResult => Group = obj => {
     val pinnerGroup = new Group()
     println(s"Creating pinner for $placeName at ${location.lat}, ${location.lon}")
     println(s"pinnerGroup: ${pinnerGroup.id}")
