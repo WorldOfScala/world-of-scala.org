@@ -30,7 +30,7 @@ object Dependencies {
     val zioMagnum                     = "4.1.0"
     val zioMock                       = "1.0.0-RC12"
     val zioPrelude                    = "1.0.0-RC48"
-    val zioSchema                     = "1.8.5"
+    val zioSchema                     = "1.9.0"
     val zioTestContainers             = "0.10.0"
   }
 
