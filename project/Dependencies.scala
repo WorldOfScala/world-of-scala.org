@@ -16,7 +16,7 @@ object Dependencies {
     val mUnit                         = "1.3.6"
     val osLib                         = "0.11.10"
     val postgresql                    = "42.7.14"
-    val scopt                         = "4.1.0"
+    val scopt                         = "4.2.0"
     val slf4j                         = "2.0.20"
     val tapir                         = "1.13.33"
     val threesjs                      = "0.2.1"
