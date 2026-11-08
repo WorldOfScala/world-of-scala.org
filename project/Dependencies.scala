@@ -23,7 +23,7 @@ object Dependencies {
     val zio                           = "2.1.27"
     val zioConfig                     = "4.1.0"
     val zioLogging                    = "2.5.3"
-    val zioLaminarTapir               = "8.1.6"
+    val zioLaminarTapir               = "8.1.7"
     val zioOpenTelemetryBootstrap     = "0.0.4"
     val openTelemetryRuntimeTelemetry = "2.32.0-alpha"
     val zioJson                       = "1.1.2"
