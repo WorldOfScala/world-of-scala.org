@@ -7,12 +7,12 @@ addSbtPlugin("ch.epfl.scala" % "sbt-scalajs-bundler"     % "0.21.1")
 addSbtPlugin("ch.epfl.scala" % "sbt-web-scalajs-bundler" % "0.21.1")
 
 addSbtPlugin("org.scalameta"  % "sbt-scalafmt"        % "2.6.2")
-addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"     % "0.14.9")
+addSbtPlugin("ch.epfl.scala"  % "sbt-scalafix"     % "0.14.10")
 //addSbtPlugin("org.xerial.sbt" % "sbt-sonatype"        % "3.12.2")
 addSbtPlugin("com.github.sbt" % "sbt-ci-release"      % "1.12.1")
 addSbtPlugin("com.eed3si9n"   % "sbt-assembly"        % "2.5.0")
 addSbtPlugin("com.eed3si9n"   % "sbt-buildinfo"       % "0.13.2")
-addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.7")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.13.0")
 // Static file generator
 //addSbtPlugin("org.playframework.twirl" % "sbt-twirl" % "2.0.9")
 // Cross project support, to spread project resources between js and jvm world
@@ -28,4 +28,4 @@ addSbtPlugin("com.skillsjars" % "skillsjars-sbt-plugin" % "0.0.9")
 // Giter8 support
 addSbtPlugin("org.foundweekends.giter8" % "sbt-giter8-scaffold" % "0.18.0")
 // Scalafix
-addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.9")
+addSbtPlugin("ch.epfl.scala" % "sbt-scalafix" % "0.14.10")
