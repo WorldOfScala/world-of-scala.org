@@ -24,7 +24,7 @@ addSbtPlugin("dev.cheleb"         % "sbt-fullstack-js"         % "0.8.0")
 // will reStart server on code modification.
 addSbtPlugin("io.spray" % "sbt-revolver" % "0.10.0")
 // SkillJars supports
-addSbtPlugin("com.skillsjars" % "skillsjars-sbt-plugin" % "0.0.9")
+addSbtPlugin("com.skillsjars" % "skillsjars-sbt-plugin" % "0.1.0")
 // Giter8 support
 addSbtPlugin("org.foundweekends.giter8" % "sbt-giter8-scaffold" % "0.18.0")
 // Scalafix
